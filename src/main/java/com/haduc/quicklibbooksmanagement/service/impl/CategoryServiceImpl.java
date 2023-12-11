@@ -7,7 +7,6 @@ import com.haduc.quicklibbooksmanagement.repository.CategoryRepository;
 import com.haduc.quicklibbooksmanagement.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 import java.util.List;
