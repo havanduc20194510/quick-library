@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,6 +47,9 @@ public class BookServiceImpl implements BookService {
                 parentCategoryId = -1L;
             }
         }
+        Date currentTime = new Date();
+        bookDto.setCreated_at(currentTime);
+        bookDto.setUpdated_at(currentTime);
         Book book = bookMapper.toBook(bookDto);
         Book bookSaved = bookRepository.save(book);
         BookDto bookDtoSaved = bookMapper.toBookDto(bookSaved);

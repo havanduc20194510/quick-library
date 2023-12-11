@@ -8,6 +8,7 @@ import com.haduc.quicklibbooksmanagement.service.AuthorService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public AuthorDto insertAuthor(AuthorDto authorDto) {
+        Date currentTime = new Date();
+        authorDto.setCreated_at(currentTime);
+        authorDto.setUpdated_at(currentTime);
         Author author = authorMapper.toAuthor(authorDto);
         Author authorSaved = authorRepository.save(author);
         AuthorDto authorDtoSaved = authorMapper.toAuthorDto(authorSaved);
