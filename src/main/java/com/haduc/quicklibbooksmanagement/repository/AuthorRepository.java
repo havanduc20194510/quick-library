@@ -1,0 +1,7 @@
+package com.haduc.quicklibbooksmanagement.repository;
+
+import com.haduc.quicklibbooksmanagement.entity.Author;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AuthorRepository extends JpaRepository<Author, Long> {
+}
