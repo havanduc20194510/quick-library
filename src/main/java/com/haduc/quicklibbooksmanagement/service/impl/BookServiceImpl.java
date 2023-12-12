@@ -3,12 +3,13 @@ package com.haduc.quicklibbooksmanagement.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.haduc.quicklibbooksmanagement.dto.*;
+import com.haduc.quicklibbooksmanagement.entity.Author;
 import com.haduc.quicklibbooksmanagement.entity.Book;
-import com.haduc.quicklibbooksmanagement.mapper.AuthorBookMapper;
-import com.haduc.quicklibbooksmanagement.mapper.BookMapper;
-import com.haduc.quicklibbooksmanagement.mapper.LibraryBookMapper;
+import com.haduc.quicklibbooksmanagement.entity.Library;
+import com.haduc.quicklibbooksmanagement.mapper.*;
 import com.haduc.quicklibbooksmanagement.repository.BookRepository;
 import com.haduc.quicklibbooksmanagement.repository.CategoryRepository;
+import com.haduc.quicklibbooksmanagement.repository.LibraryBookRepository;
 import com.haduc.quicklibbooksmanagement.service.BookService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,13 @@ public class BookServiceImpl implements BookService {
 
     private AuthorBookMapper authorBookMapper;
 
+    private LibraryBookRepository libraryBooRepository;
+
     private LibraryBookMapper libraryBookMapper;
+
+    private AuthorMapper authorMapper;
+
+    private LibraryMapper libraryMapper;
     private Cloudinary cloudinary;
     @Override
     public BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException {
@@ -75,17 +82,28 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ResultDto getById(Long id) {
-        Book book = bookRepository.findById(id).get();
+    public BookInstanceDto getById(Long id) {
+        Book book = libraryBooRepository.findById(id).get().getBook();
         BookDto bookDto = bookMapper.toBookDto(book);
-        List<AuthorBookDto> authorBookDtos = book.getAuthorBooks().stream()
+        List<Long> authorIds = book.getAuthorBooks().stream()
+                .map(authorBook -> authorBook.getAuthor().getId())
+                .collect(Collectors.toList());
+        Library library = libraryBooRepository.findById(id).get().getLibrary();
+        LibraryDto libraryDto = libraryMapper.toLibraryDto(library);
+        List<Author> authorList = book.getAuthorBooks().stream()
+                .map(authorBook -> authorBook.getAuthor())
+                .collect(Collectors.toList());
+        List<AuthorDto> authorDtos = authorList.stream()
+                .map(author -> authorMapper.toAuthorDto(author))
+                .collect(Collectors.toList());
+      /*  List<AuthorBookDto> authorBookDtos = book.getAuthorBooks().stream()
                 .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
                 .collect(Collectors.toList());
         List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
                 .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
-                .collect(Collectors.toList());
-        ResultDto resultDto = new ResultDto(bookDto, authorBookDtos, libraryBookDtos);
-        return resultDto;
+                .collect(Collectors.toList());*/
+        BookInstanceDto bookInstanceDto = new BookInstanceDto(bookDto, authorDtos, libraryDto);
+        return bookInstanceDto;
     }
 
    /* @Override

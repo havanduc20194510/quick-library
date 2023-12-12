@@ -1,6 +1,7 @@
 package com.haduc.quicklibbooksmanagement.service;
 
 import com.haduc.quicklibbooksmanagement.dto.BookDto;
+import com.haduc.quicklibbooksmanagement.dto.BookInstanceDto;
 import com.haduc.quicklibbooksmanagement.dto.ResultDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +13,7 @@ public interface BookService {
     BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException;
     List<ResultDto> getAll();
 
-    ResultDto getById(Long id);
+    BookInstanceDto getById(Long id);
 
   /*  List<Book> findByTitleContainingIgnoreCase(String title);
 

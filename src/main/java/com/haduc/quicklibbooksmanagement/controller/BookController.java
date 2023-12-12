@@ -2,6 +2,7 @@ package com.haduc.quicklibbooksmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haduc.quicklibbooksmanagement.dto.BookDto;
+import com.haduc.quicklibbooksmanagement.dto.BookInstanceDto;
 import com.haduc.quicklibbooksmanagement.dto.ResultDto;
 import com.haduc.quicklibbooksmanagement.service.BookService;
 import lombok.AllArgsConstructor;
@@ -35,8 +36,8 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ResultDto> getById(@PathVariable("id") Long id) {
-        ResultDto book = bookService.getById(id);
+    ResponseEntity<BookInstanceDto> getById(@PathVariable("id") Long id) {
+        BookInstanceDto book = bookService.getById(id);
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
