@@ -1,6 +1,5 @@
 package com.haduc.quicklibbooksmanagement.dto;
 
-import com.haduc.quicklibbooksmanagement.entity.Book;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

@@ -23,7 +23,6 @@ public interface BookService {
 
     List<Book> findByCategoryIn(List<Category> categories);*/
 
-    List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, String categories);
+    List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId);
 
-    List<BookInfoResultDto> getBooksAndLibrariesInfo();
 }

@@ -47,14 +47,8 @@ public class BookController {
                                       @RequestParam(value = "authorName", required = false) String authorName,
                                       @RequestParam(value = "publishYear", required = false) Integer publishYear,
                                       @RequestParam(value = "libraryName", required = false) String libraryName,
-                                      @RequestParam(value = "category", required = false) String category) {
-        List<ResultDto> books = bookService.search(title, authorName, publishYear, libraryName, category);
+                                      @RequestParam(value = "categoryId", required = false) Long categoryId) {
+        List<ResultDto> books = bookService.search(title, authorName, publishYear, libraryName, categoryId);
         return new ResponseEntity<>(books, HttpStatus.OK);
-    }
-
-    @GetMapping("/get-all-books")
-    public ResponseEntity<List<BookInfoResultDto>> getBooksAndLibrariesInfo() {
-        List<BookInfoResultDto> bookInfoResultDtoList = bookService.getBooksAndLibrariesInfo();
-        return new ResponseEntity<>(bookInfoResultDtoList, HttpStatus.OK);
     }
 }

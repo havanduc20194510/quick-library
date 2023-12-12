@@ -35,7 +35,6 @@ public class BookServiceImpl implements BookService {
 
     private CategoryRepository categoryRepository;
 
-    private LibraryBookMapper libraryBookMapper;
 
     private Cloudinary cloudinary;
 
@@ -44,30 +43,6 @@ public class BookServiceImpl implements BookService {
     private LibraryMapper libraryMapper;
 
 
-    @Override
-    public List<BookInfoResultDto> getBooksAndLibrariesInfo() {
-        List<BookInfoDto> bookInfoDtoList = bookRepository.getBooksAndLibraries();
-        // duyệt bookInfoDtoList
-        // tìm các List<LibraryBook> có bookId = bookInfoDto.bookId ứng với mỗi id và thêm vào BookInfoResultDto
-        // thêm BookInfoResultDto vào List<BookInfoResultDto>
-        for (BookInfoDto bookInfoDto: bookInfoDtoList) {
-            // tìm các List<AuthorBook> có bookId = bookInfoDto.bookId ứng với mỗi id và thêm vào BookInfoResultDto
-            List<AuthorBook> authorBookList = authorBookRepository.findByBookId(bookInfoDto.getId());
-            List<AuthorBookDto> authorBookDtoList = authorBookList.stream()
-                    .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
-                    .collect(Collectors.toList());
-            // lấy ra List<AuthorDto> từ List<AuthorBookDto>
-            List<AuthorDto> authorDtoList = authorBookDtoList.stream()
-                    .map(authorBookDto -> authorBookDto.getAuthor())
-                    .collect(Collectors.toList());
-
-            // thêm BookInfoResultDto vào List<BookInfoResultDto>
-            List<BookInfoResultDto> bookInfoResultDtoList = new ArrayList<>();
-            bookInfoResultDtoList.add(new BookInfoResultDto(bookInfoDto, authorDtoList));
-        }
-        List<BookInfoResultDto> bookInfoResultDtoList = new ArrayList<>();
-        return bookInfoResultDtoList;
-    }
 
     @Override
     public BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException {
@@ -174,7 +149,7 @@ public class BookServiceImpl implements BookService {
     }
 */
     @Override
-    public List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, String category) {
+    public List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long category) {
         List<Book> bookList = bookRepository.findAll();
         List<Book> bookListResult = new ArrayList<>();
         for(Book book : bookList){
@@ -184,10 +159,10 @@ public class BookServiceImpl implements BookService {
                 }
             }
             if(authorName != null && !authorName.isEmpty()){
-                if(!(book.getAuthorBooks().stream()
-                        .map(authorBook -> authorBook.getAuthor().getName().toLowerCase())
-                        .collect(Collectors.toList())
-                        .contains(authorName.toLowerCase()))){
+                String authorNames = book.getAuthorBooks().stream()
+                        .map(authorBook -> authorBook.getAuthor().getName())
+                        .collect(Collectors.joining());
+                if(!(authorNames.toLowerCase().contains(authorName.toLowerCase()))){
                     continue;
                 }
             }
@@ -197,16 +172,16 @@ public class BookServiceImpl implements BookService {
                 }
             }
             if(libraryName != null && !libraryName.isEmpty()){
-                if(!book.getLibraryBooks().stream()
+                String libraryNames = book.getLibraryBooks().stream()
                         .map(libraryBook -> libraryBook.getLibrary().getName())
-                        .collect(Collectors.toList())
-                        .contains(libraryName)){
+                        .collect(Collectors.joining());
+                if(!(libraryNames.toLowerCase().contains(libraryName.toLowerCase()))){
                     continue;
                 }
             }
-            if(category != null && !category.isEmpty()){
-                String categoryName = book.getCategory().getName();
-                if(!categoryName.toLowerCase().contains(category.toLowerCase())){
+            if(category != null && category > 0){
+                Long categoryId = book.getCategory().getId();
+                if(!categoryId.equals(category)){
                     continue;
                 }
             }
@@ -235,6 +210,4 @@ public class BookServiceImpl implements BookService {
         }
         return resultDtoList;
     }
-
-
 }
