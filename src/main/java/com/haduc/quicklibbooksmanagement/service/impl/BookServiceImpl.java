@@ -4,12 +4,11 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.haduc.quicklibbooksmanagement.dto.*;
 import com.haduc.quicklibbooksmanagement.entity.Author;
+import com.haduc.quicklibbooksmanagement.entity.AuthorBook;
 import com.haduc.quicklibbooksmanagement.entity.Book;
 import com.haduc.quicklibbooksmanagement.entity.Library;
 import com.haduc.quicklibbooksmanagement.mapper.*;
-import com.haduc.quicklibbooksmanagement.repository.BookRepository;
-import com.haduc.quicklibbooksmanagement.repository.CategoryRepository;
-import com.haduc.quicklibbooksmanagement.repository.LibraryBookRepository;
+import com.haduc.quicklibbooksmanagement.repository.*;
 import com.haduc.quicklibbooksmanagement.service.BookService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,21 +25,50 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookServiceImpl implements BookService {
     private BookRepository bookRepository;
-
-    //private ResultMapper resultMapper;
-    private BookMapper bookMapper;
-    private CategoryRepository categoryRepository;
+    private AuthorBookRepository authorBookRepository;
 
     private AuthorBookMapper authorBookMapper;
 
-    private LibraryBookRepository libraryBooRepository;
+    private AuthorMapper authorMapper;
+
+    private BookMapper bookMapper;
+
+    private CategoryRepository categoryRepository;
 
     private LibraryBookMapper libraryBookMapper;
 
-    private AuthorMapper authorMapper;
+    private Cloudinary cloudinary;
+
+    private LibraryBookRepository libraryBooRepository;
 
     private LibraryMapper libraryMapper;
-    private Cloudinary cloudinary;
+
+
+    @Override
+    public List<BookInfoResultDto> getBooksAndLibrariesInfo() {
+        List<BookInfoDto> bookInfoDtoList = bookRepository.getBooksAndLibraries();
+        // duyệt bookInfoDtoList
+        // tìm các List<LibraryBook> có bookId = bookInfoDto.bookId ứng với mỗi id và thêm vào BookInfoResultDto
+        // thêm BookInfoResultDto vào List<BookInfoResultDto>
+        for (BookInfoDto bookInfoDto: bookInfoDtoList) {
+            // tìm các List<AuthorBook> có bookId = bookInfoDto.bookId ứng với mỗi id và thêm vào BookInfoResultDto
+            List<AuthorBook> authorBookList = authorBookRepository.findByBookId(bookInfoDto.getId());
+            List<AuthorBookDto> authorBookDtoList = authorBookList.stream()
+                    .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
+                    .collect(Collectors.toList());
+            // lấy ra List<AuthorDto> từ List<AuthorBookDto>
+            List<AuthorDto> authorDtoList = authorBookDtoList.stream()
+                    .map(authorBookDto -> authorBookDto.getAuthor())
+                    .collect(Collectors.toList());
+
+            // thêm BookInfoResultDto vào List<BookInfoResultDto>
+            List<BookInfoResultDto> bookInfoResultDtoList = new ArrayList<>();
+            bookInfoResultDtoList.add(new BookInfoResultDto(bookInfoDto, authorDtoList));
+        }
+        List<BookInfoResultDto> bookInfoResultDtoList = new ArrayList<>();
+        return bookInfoResultDtoList;
+    }
+
     @Override
     public BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
@@ -68,14 +96,28 @@ public class BookServiceImpl implements BookService {
         List<Book> bookList = bookRepository.findAll();
         List<ResultDto> resultDtoList = new ArrayList<>();
         for(Book book : bookList){
-            BookDto bookDto = bookMapper.toBookDto(book);
+           /* BookDto bookDto = bookMapper.toBookDto(book);
             List<AuthorBookDto> authorBookDtos = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
                     .collect(Collectors.toList());
             List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
                     .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
                     .collect(Collectors.toList());
-            ResultDto resultDto = new ResultDto(bookDto, authorBookDtos, libraryBookDtos);
+            ResultDto resultDto = new ResultDto(bookDto, authorBookDtos, libraryBookDtos);*/
+            BookDto bookDto = bookMapper.toBookDto(book);
+            List<Author> authorList = book.getAuthorBooks().stream()
+                    .map(authorBook -> authorBook.getAuthor())
+                    .collect(Collectors.toList());
+            List<AuthorDto> authorDtos = authorList.stream()
+                    .map(author -> authorMapper.toAuthorDto(author))
+                    .collect(Collectors.toList());
+            List<Library> libraryList = book.getLibraryBooks().stream()
+                    .map(libraryBook -> libraryBook.getLibrary())
+                    .collect(Collectors.toList());
+            List<LibraryDto> libraryDtos = libraryList.stream()
+                    .map(library -> libraryMapper.toLibraryDto(library))
+                    .collect(Collectors.toList());
+            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryDtos);
             resultDtoList.add(resultDto);
         }
         return resultDtoList;
@@ -173,15 +215,26 @@ public class BookServiceImpl implements BookService {
         List<ResultDto> resultDtoList = new ArrayList<>();
         for(Book book : bookListResult){
             BookDto bookDto = bookMapper.toBookDto(book);
-            List<AuthorBookDto> authorBookDtos = book.getAuthorBooks().stream()
+            /*List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
                     .collect(Collectors.toList());
             List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
                     .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
+                    .collect(Collectors.toList());*/
+            List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
+                    .map(authorBook -> authorBook.getAuthor())
+                    .map(author -> authorMapper.toAuthorDto(author))
                     .collect(Collectors.toList());
-            ResultDto resultDto = new ResultDto(bookDto, authorBookDtos, libraryBookDtos);
+            List<LibraryDto> libraryDtos = book.getLibraryBooks().stream()
+                    .map(libraryBook -> libraryBook.getLibrary())
+                    .map(library -> libraryMapper.toLibraryDto(library))
+                    .collect(Collectors.toList());
+
+            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryDtos);
             resultDtoList.add(resultDto);
         }
         return resultDtoList;
     }
+
+
 }

@@ -2,6 +2,7 @@ package com.haduc.quicklibbooksmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haduc.quicklibbooksmanagement.dto.BookDto;
+import com.haduc.quicklibbooksmanagement.dto.BookInfoResultDto;
 import com.haduc.quicklibbooksmanagement.dto.BookInstanceDto;
 import com.haduc.quicklibbooksmanagement.dto.ResultDto;
 import com.haduc.quicklibbooksmanagement.service.BookService;
@@ -49,5 +50,11 @@ public class BookController {
                                       @RequestParam(value = "category", required = false) String category) {
         List<ResultDto> books = bookService.search(title, authorName, publishYear, libraryName, category);
         return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-all-books")
+    public ResponseEntity<List<BookInfoResultDto>> getBooksAndLibrariesInfo() {
+        List<BookInfoResultDto> bookInfoResultDtoList = bookService.getBooksAndLibrariesInfo();
+        return new ResponseEntity<>(bookInfoResultDtoList, HttpStatus.OK);
     }
 }

@@ -11,8 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultDto {
-    private BookDto bookDto;
-    private List<AuthorDto> authors;
-    private List<LibraryDto> librarys;
+public class BookInfoResultDto {
+    private BookInfoDto bookInfoDto;
+    private List<AuthorDto> authorDtos;
 }

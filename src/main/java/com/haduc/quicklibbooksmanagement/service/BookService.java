@@ -1,8 +1,6 @@
 package com.haduc.quicklibbooksmanagement.service;
 
-import com.haduc.quicklibbooksmanagement.dto.BookDto;
-import com.haduc.quicklibbooksmanagement.dto.BookInstanceDto;
-import com.haduc.quicklibbooksmanagement.dto.ResultDto;
+import com.haduc.quicklibbooksmanagement.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,4 +24,6 @@ public interface BookService {
     List<Book> findByCategoryIn(List<Category> categories);*/
 
     List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, String categories);
+
+    List<BookInfoResultDto> getBooksAndLibrariesInfo();
 }
