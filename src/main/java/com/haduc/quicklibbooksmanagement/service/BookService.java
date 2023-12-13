@@ -10,6 +10,7 @@ public interface BookService {
 
     BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException;
     List<ResultDto> getAll();
+    List<ResultConvertDto> getAllConvert();
 
     BookInstanceDto getById(Long id);
 
@@ -24,5 +25,6 @@ public interface BookService {
     List<Book> findByCategoryIn(List<Category> categories);*/
 
     List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId);
+    List<ResultConvertDto> searchByParam(String title, String authorName, Integer publishYear, String libraryName, Long categoryId);
 
 }

@@ -1,10 +1,7 @@
 package com.haduc.quicklibbooksmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.haduc.quicklibbooksmanagement.dto.BookDto;
-import com.haduc.quicklibbooksmanagement.dto.BookInfoResultDto;
-import com.haduc.quicklibbooksmanagement.dto.BookInstanceDto;
-import com.haduc.quicklibbooksmanagement.dto.ResultDto;
+import com.haduc.quicklibbooksmanagement.dto.*;
 import com.haduc.quicklibbooksmanagement.service.BookService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +33,12 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
+    @GetMapping("/listConvert")
+    ResponseEntity<List<ResultConvertDto>> getAllConvert() {
+        List<ResultConvertDto> books = bookService.getAllConvert();
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     ResponseEntity<BookInstanceDto> getById(@PathVariable("id") Long id) {
         BookInstanceDto book = bookService.getById(id);
@@ -49,6 +52,16 @@ public class BookController {
                                       @RequestParam(value = "libraryName", required = false) String libraryName,
                                       @RequestParam(value = "categoryId", required = false) Long categoryId) {
         List<ResultDto> books = bookService.search(title, authorName, publishYear, libraryName, categoryId);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/searchByParam")
+    ResponseEntity<List<ResultConvertDto>> searchByParam(@RequestParam(value = "title", required = false) String title,
+                                      @RequestParam(value = "authorName", required = false) String authorName,
+                                      @RequestParam(value = "publishYear", required = false) Integer publishYear,
+                                      @RequestParam(value = "libraryName", required = false) String libraryName,
+                                      @RequestParam(value = "categoryId", required = false) Long categoryId) {
+        List<ResultConvertDto> books = bookService.searchByParam(title, authorName, publishYear, libraryName, categoryId);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 }

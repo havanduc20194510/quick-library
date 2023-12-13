@@ -3,10 +3,7 @@ package com.haduc.quicklibbooksmanagement.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.haduc.quicklibbooksmanagement.dto.*;
-import com.haduc.quicklibbooksmanagement.entity.Author;
-import com.haduc.quicklibbooksmanagement.entity.AuthorBook;
-import com.haduc.quicklibbooksmanagement.entity.Book;
-import com.haduc.quicklibbooksmanagement.entity.Library;
+import com.haduc.quicklibbooksmanagement.entity.*;
 import com.haduc.quicklibbooksmanagement.mapper.*;
 import com.haduc.quicklibbooksmanagement.repository.*;
 import com.haduc.quicklibbooksmanagement.service.BookService;
@@ -71,14 +68,6 @@ public class BookServiceImpl implements BookService {
         List<Book> bookList = bookRepository.findAll();
         List<ResultDto> resultDtoList = new ArrayList<>();
         for(Book book : bookList){
-           /* BookDto bookDto = bookMapper.toBookDto(book);
-            List<AuthorBookDto> authorBookDtos = book.getAuthorBooks().stream()
-                    .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
-                    .collect(Collectors.toList());
-            List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
-                    .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
-                    .collect(Collectors.toList());
-            ResultDto resultDto = new ResultDto(bookDto, authorBookDtos, libraryBookDtos);*/
             BookDto bookDto = bookMapper.toBookDto(book);
             List<Author> authorList = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
@@ -113,13 +102,7 @@ public class BookServiceImpl implements BookService {
         List<AuthorDto> authorDtos = authorList.stream()
                 .map(author -> authorMapper.toAuthorDto(author))
                 .collect(Collectors.toList());
-      /*  List<AuthorBookDto> authorBookDtos = book.getAuthorBooks().stream()
-                .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
-                .collect(Collectors.toList());
-        List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
-                .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
-                .collect(Collectors.toList());*/
-        // lấy ra các quyển sách khác của các tác giả có id trong AuthorIds
+
         List<Book> ortherBooks = bookRepository.findAll().stream()
                 .filter(book1 -> {
                     List<Long> authorIds1 = book1.getAuthorBooks().stream()
@@ -142,35 +125,38 @@ public class BookServiceImpl implements BookService {
         return bookInstanceDto;
     }
 
-   /* @Override
-    public List<Book> findByTitleContainingIgnoreCase(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title);
+    @Override
+    public List<ResultConvertDto> getAllConvert() {
+        List<Book> bookList = bookRepository.findAll();
+        List<ResultConvertDto> resultDtoList = new ArrayList<>();
+        for(Book book : bookList){
+            BookDto bookDto = bookMapper.toBookDto(book);
+            List<Author> authorList = book.getAuthorBooks().stream()
+                    .map(authorBook -> authorBook.getAuthor())
+                    .collect(Collectors.toList());
+            List<AuthorDto> authorDtos = authorList.stream()
+                    .map(author -> authorMapper.toAuthorDto(author))
+                    .collect(Collectors.toList());
+            List<Library> libraryList = book.getLibraryBooks().stream()
+                    .map(libraryBook -> libraryBook.getLibrary())
+                    .collect(Collectors.toList());
+            List<LibraryDto> libraryDtos = libraryList.stream()
+                    .map(library -> libraryMapper.toLibraryDto(library))
+                    .collect(Collectors.toList());
+
+            for (LibraryDto libraryDto : libraryDtos) {
+                ResultConvertDto resultConvertDto = new ResultConvertDto(bookDto, authorDtos, libraryDto);
+                resultDtoList.add(resultConvertDto);
+            }
+        }
+        return resultDtoList;
     }
 
     @Override
-    public List<Book> findByAuthorBooksAuthorNameIgnoreCase(String authorName) {
-        return bookRepository.findByAuthorBooksAuthorNameIgnoreCase(authorName);
-    }
-
-    @Override
-    public List<Book> findByPublishYear(Integer publishYear) {
-        return bookRepository.findByPublishYear(publishYear);
-    }
-
-    @Override
-    public List<Book> findByLibraryBooksLibraryNameIgnoreCase(String libraryName) {
-        return bookRepository.findByLibraryBooksLibraryNameIgnoreCase(libraryName);
-    }
-
-    @Override
-    public List<Book> findByCategoryIn(List<Category> categories) {
-        return bookRepository.findByCategoryIn(categories);
-    }
-*/
-    @Override
-    public List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long category) {
+    public List<ResultConvertDto> searchByParam(String title, String authorName, Integer publishYear, String libraryName, Long categoryId) {
         List<Book> bookList = bookRepository.findAll();
         List<Book> bookListResult = new ArrayList<>();
+        List<LibraryBook> libraryBookResult = new ArrayList<>();
         for(Book book : bookList){
             if(title != null && !title.isEmpty()){
                 if(!book.getTitle().toLowerCase().contains(title.toLowerCase())){
@@ -191,39 +177,109 @@ public class BookServiceImpl implements BookService {
                 }
             }
             if(libraryName != null && !libraryName.isEmpty()){
-                String libraryNames = book.getLibraryBooks().stream()
-                        .map(libraryBook -> libraryBook.getLibrary().getName())
-                        .collect(Collectors.joining());
-                if(!(libraryNames.toLowerCase().contains(libraryName.toLowerCase()))){
+                for(LibraryBook libraryBook : book.getLibraryBooks()) {
+                    if(!libraryBook.getLibrary().getName().toLowerCase().contains(libraryName.toLowerCase())) {
+                        //library_name = libraryBook.getLibrary().getName();
+                        continue;
+                    }
+                    libraryBookResult.add(libraryBook);
+                }
+                if(libraryBookResult.isEmpty()){
+                    continue;
+                }else {
+                    book.setLibraryBooks(libraryBookResult);
+                }
+            }
+
+            if(categoryId != null && categoryId > 0){
+                Long category = book.getCategory().getId();
+                if(!category.equals(categoryId)){
                     continue;
                 }
             }
-            if(category != null && category > 0){
-                Long categoryId = book.getCategory().getId();
-                if(!categoryId.equals(category)){
+            bookListResult.add(book);
+        }
+        List<ResultConvertDto> resultDtoList = new ArrayList<>();
+        for(Book book : bookListResult) {
+            List<LibraryBook> libraryBooks = book.getLibraryBooks();
+            List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
+                    .map(authorBook -> authorBook.getAuthor())
+                    .map(author -> authorMapper.toAuthorDto(author))
+                    .collect(Collectors.toList());
+            ResultConvertDto resultConvertDto = new ResultConvertDto();
+            for (LibraryBook libraryBook : libraryBooks) {
+                if (libraryBook.getBook().getId() == book.getId()) {
+                    BookDto bookDto = bookMapper.toBookDto(book);
+                    LibraryDto libraryDto = libraryMapper.toLibraryDto(libraryBook.getLibrary());
+                    resultConvertDto = new ResultConvertDto(bookDto, authorDtos, libraryDto);
+                    resultDtoList.add(resultConvertDto);
+                }
+            }
+        }
+        return resultDtoList;
+    }
+    @Override
+    public List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId) {
+        List<Book> bookList = bookRepository.findAll();
+        List<Book> bookListResult = new ArrayList<>();
+        List<LibraryBook> libraryBookResult = new ArrayList<>();
+        for(Book book : bookList){
+            if(title != null && !title.isEmpty()){
+                if(!book.getTitle().toLowerCase().contains(title.toLowerCase())){
+                    continue;
+                }
+            }
+            if(authorName != null && !authorName.isEmpty()){
+                String authorNames = book.getAuthorBooks().stream()
+                        .map(authorBook -> authorBook.getAuthor().getName())
+                        .collect(Collectors.joining());
+                if(!(authorNames.toLowerCase().contains(authorName.toLowerCase()))){
+                    continue;
+                }
+            }
+            if(publishYear!=null){
+                if(book.getPublish_year() != publishYear.intValue()){
+                    continue;
+                }
+            }
+            if(libraryName != null && !libraryName.isEmpty()){
+                for(LibraryBook libraryBook : book.getLibraryBooks()) {
+                    if(!libraryBook.getLibrary().getName().toLowerCase().contains(libraryName.toLowerCase())) {
+                        //library_name = libraryBook.getLibrary().getName();
+                        continue;
+                    }
+                    libraryBookResult.add(libraryBook);
+                }
+                if(libraryBookResult.isEmpty()){
+                    continue;
+                }else {
+                    book.setLibraryBooks(libraryBookResult);
+                }
+            }
+
+            if(categoryId != null && categoryId > 0){
+                Long category = book.getCategory().getId();
+                if(!category.equals(categoryId)){
                     continue;
                 }
             }
             bookListResult.add(book);
         }
         List<ResultDto> resultDtoList = new ArrayList<>();
+
         for(Book book : bookListResult){
             BookDto bookDto = bookMapper.toBookDto(book);
-            /*List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
-                    .map(authorBook -> authorBookMapper.toAuthorBookDto(authorBook))
-                    .collect(Collectors.toList());
-            List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
-                    .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
-                    .collect(Collectors.toList());*/
             List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
                     .map(author -> authorMapper.toAuthorDto(author))
                     .collect(Collectors.toList());
-            List<LibraryDto> libraryDtos = book.getLibraryBooks().stream()
-                    .map(libraryBook -> libraryBook.getLibrary())
-                    .map(library -> libraryMapper.toLibraryDto(library))
-                    .collect(Collectors.toList());
-
+            List<LibraryBook> libraryBooks = book.getLibraryBooks();
+            List<LibraryDto> libraryDtos = new ArrayList<>();
+            for (LibraryBook libraryBook : libraryBooks) {
+                if(libraryBook.getBook().getId() == book.getId()){
+                    libraryDtos.add(libraryMapper.toLibraryDto(libraryBook.getLibrary()));
+                }
+            }
             ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryDtos);
             resultDtoList.add(resultDto);
         }
