@@ -13,4 +13,5 @@ public class BookInstanceDto {
     private BookDto book;
     private List<AuthorDto> authors;
     private LibraryDto libraryDto;
+    private List<BookDto> ortherBooks;
 }

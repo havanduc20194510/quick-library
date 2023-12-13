@@ -26,6 +26,6 @@ public class BookDto {
     private Date created_at;
     private Date updated_at;
 
-    private List<AuthorBookDto> authorBookDtos;
-    private List<LibraryBookDto> libraryBookDtos;
+    //private List<AuthorBookDto> authorBookDtos;
+    //private List<LibraryBookDto> libraryBookDtos;
 }

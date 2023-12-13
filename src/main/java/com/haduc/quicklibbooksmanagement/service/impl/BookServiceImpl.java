@@ -119,7 +119,26 @@ public class BookServiceImpl implements BookService {
         List<LibraryBookDto> libraryBookDtos = book.getLibraryBooks().stream()
                 .map(libraryBook -> libraryBookMapper.toLibraryBookDto(libraryBook))
                 .collect(Collectors.toList());*/
-        BookInstanceDto bookInstanceDto = new BookInstanceDto(bookDto, authorDtos, libraryDto);
+        // lấy ra các quyển sách khác của các tác giả có id trong AuthorIds
+        List<Book> ortherBooks = bookRepository.findAll().stream()
+                .filter(book1 -> {
+                    List<Long> authorIds1 = book1.getAuthorBooks().stream()
+                            .map(authorBook -> authorBook.getAuthor().getId())
+                            .collect(Collectors.toList());
+                    for(Long authorId : authorIds){
+                        if(authorIds1.contains(authorId) && !book1.getId().equals(book.getId())){
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        List<BookDto> ortherBookDtos = ortherBooks.stream()
+                .map(book1 -> bookMapper.toBookDto(book1))
+                .collect(Collectors.toList());
+
+        BookInstanceDto bookInstanceDto = new BookInstanceDto(bookDto, authorDtos, libraryDto, ortherBookDtos);
         return bookInstanceDto;
     }
 
