@@ -22,10 +22,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookServiceImpl implements BookService {
     private BookRepository bookRepository;
-    private AuthorBookRepository authorBookRepository;
-
-    private AuthorBookMapper authorBookMapper;
-
     private AuthorMapper authorMapper;
 
     private BookMapper bookMapper;
@@ -248,7 +244,9 @@ public class BookServiceImpl implements BookService {
                         //library_name = libraryBook.getLibrary().getName();
                         continue;
                     }
-                    libraryBookResult.add(libraryBook);
+                    if(libraryBook.getLibrary() != null) {
+                        libraryBookResult.add(libraryBook);
+                    }
                 }
                 if(libraryBookResult.isEmpty()){
                     continue;
@@ -283,6 +281,10 @@ public class BookServiceImpl implements BookService {
             ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryDtos);
             resultDtoList.add(resultDto);
         }
+        // bỏ đi libaryDtos null trong resultDtoList
+        resultDtoList = resultDtoList.stream()
+                .filter(resultDto -> resultDto.getLibrarys().size() > 0)
+                .collect(Collectors.toList());
         return resultDtoList;
     }
 }
