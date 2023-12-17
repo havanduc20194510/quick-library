@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haduc.quicklibbooksmanagement.dto.*;
 import com.haduc.quicklibbooksmanagement.service.BookService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,12 +57,22 @@ public class BookController {
     }
 
     @GetMapping("/searchByParam")
-    ResponseEntity<List<ResultConvertDto>> searchByParam(@RequestParam(value = "title", required = false) String title,
-                                      @RequestParam(value = "authorName", required = false) String authorName,
-                                      @RequestParam(value = "publishYear", required = false) Integer publishYear,
-                                      @RequestParam(value = "libraryName", required = false) String libraryName,
-                                      @RequestParam(value = "categoryId", required = false) Long categoryId) {
-        List<ResultConvertDto> books = bookService.searchByParam(title, authorName, publishYear, libraryName, categoryId);
+    ResponseEntity<Page<ResultConvertDto>> searchByParam(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "authorName", required = false) String authorName,
+            @RequestParam(value = "publishYear", required = false) Integer publishYear,
+            @RequestParam(value = "libraryName", required = false) String libraryName,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size) {
+        Page<ResultConvertDto> books = bookService.searchByParam(title, authorName, publishYear, libraryName, categoryId, page, size);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/list-book-detail")
+    ResponseEntity<Page<BookDetail>> getBookDetails(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                           @RequestParam(value = "size", defaultValue = "5") int size) {
+        Page<BookDetail> books = bookService.getAllBook(page, size);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 }

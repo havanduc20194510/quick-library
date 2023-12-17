@@ -8,6 +8,10 @@ import com.haduc.quicklibbooksmanagement.mapper.*;
 import com.haduc.quicklibbooksmanagement.repository.*;
 import com.haduc.quicklibbooksmanagement.service.BookService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +38,7 @@ public class BookServiceImpl implements BookService {
     private LibraryBookRepository libraryBooRepository;
 
     private LibraryMapper libraryMapper;
-
+    private final AuthorRepository authorRepository;
 
 
     @Override
@@ -122,7 +126,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<ResultConvertDto> getAllConvert() {
+    public Page<ResultConvertDto> getAllConvert(int page, int size) {
         List<Book> bookList = bookRepository.findAll();
         List<ResultConvertDto> resultDtoList = new ArrayList<>();
         for(Book book : bookList){
@@ -145,11 +149,11 @@ public class BookServiceImpl implements BookService {
                 resultDtoList.add(resultConvertDto);
             }
         }
-        return resultDtoList;
+        return new PageImpl<>(resultDtoList, PageRequest.of(page-1, size), resultDtoList.size());
     }
 
     @Override
-    public List<ResultConvertDto> searchByParam(String title, String authorName, Integer publishYear, String libraryName, Long categoryId) {
+    public Page<ResultConvertDto> searchByParam(String title, String authorName, Integer publishYear, String libraryName, Long categoryId, int page, int size) {
         List<Book> bookList = bookRepository.findAll();
         List<Book> bookListResult = new ArrayList<>();
         List<LibraryBook> libraryBookResult = new ArrayList<>();
@@ -212,7 +216,7 @@ public class BookServiceImpl implements BookService {
                 }
             }
         }
-        return resultDtoList;
+        return new PageImpl<>(resultDtoList, PageRequest.of(page-1, size), resultDtoList.size());
     }
     @Override
     public List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId) {
@@ -286,5 +290,40 @@ public class BookServiceImpl implements BookService {
                 .filter(resultDto -> resultDto.getLibrarys().size() > 0)
                 .collect(Collectors.toList());
         return resultDtoList;
+    }
+
+    @Override
+    public Page<BookDetail> getAllBook(int page, int size) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<BookInfoDto> bookInfoDtoList = bookRepository.getBooksAndLibraries(pageable);
+        List<BookDetail> bookDetailList = new ArrayList<>();
+        for(BookInfoDto bookInfoDto : bookInfoDtoList){
+            Category category = categoryRepository.findById(bookInfoDto.getParent_category_id()).orElse(null);
+            String categoryName = category != null ? category.getName(): "";
+
+            BookDetail bookDetail = new BookDetail();
+            bookDetail.setId(bookInfoDto.getId());
+            bookDetail.setTitle(bookInfoDto.getTitle());
+            bookDetail.setDescription(bookInfoDto.getDescription());
+            bookDetail.setQuantity(bookInfoDto.getQuantity());
+            bookDetail.setCover_image_url(bookInfoDto.getCover_image_url());
+            bookDetail.setPublish_year(bookInfoDto.getPublish_year());
+            bookDetail.setPublisher(bookInfoDto.getPublisher());
+            bookDetail.setLanguage(bookInfoDto.getLanguage());
+            bookDetail.setPage_number(bookInfoDto.getPage_number());
+            bookDetail.setCreated_at(bookInfoDto.getCreated_at());
+            bookDetail.setUpdated_at(bookInfoDto.getUpdated_at());
+            bookDetail.setCategory_id(bookInfoDto.getCategory_id());
+            bookDetail.setCategory_name(bookInfoDto.getCategory_name());
+            bookDetail.setParent_category_id(bookInfoDto.getParent_category_id());
+            bookDetail.setParent_category_name(categoryName);
+            bookDetail.setLibrary_id(bookInfoDto.getLibrary_id());
+            bookDetail.setLibrary_name(bookInfoDto.getLibrary_name());
+            bookDetail.setLocation(bookInfoDto.getLocation());
+            bookDetail.setCode(bookInfoDto.getCode());
+            bookDetail.setStatus(bookInfoDto.getStatus());
+            bookDetailList.add(bookDetail);
+        }
+        return new PageImpl<>(bookDetailList, pageable, bookInfoDtoList.getTotalElements());
     }
 }

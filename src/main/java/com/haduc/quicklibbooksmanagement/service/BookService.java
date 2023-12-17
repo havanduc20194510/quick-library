@@ -1,6 +1,7 @@
 package com.haduc.quicklibbooksmanagement.service;
 
 import com.haduc.quicklibbooksmanagement.dto.*;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,21 +11,12 @@ public interface BookService {
 
     BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException;
     List<ResultDto> getAll();
-    List<ResultConvertDto> getAllConvert();
+    Page<ResultConvertDto> getAllConvert(int page, int size);
 
     BookInstanceDto getById(Long id);
 
-  /*  List<Book> findByTitleContainingIgnoreCase(String title);
-
-    List<Book> findByAuthorBooksAuthorNameIgnoreCase(String authorName);
-
-    List<Book> findByPublishYear(Integer publishYear);
-
-    List<Book> findByLibraryBooksLibraryNameIgnoreCase(String libraryName);
-
-    List<Book> findByCategoryIn(List<Category> categories);*/
-
     List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId);
-    List<ResultConvertDto> searchByParam(String title, String authorName, Integer publishYear, String libraryName, Long categoryId);
+    Page<ResultConvertDto> searchByParam(String title, String authorName, Integer publishYear, String libraryName, Long categoryId, int page, int size);
 
+    Page<BookDetail> getAllBook(int page, int size);
 }
