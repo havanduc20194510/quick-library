@@ -35,8 +35,9 @@ public class BookController {
     }
 
     @GetMapping("/listConvert")
-    ResponseEntity<List<ResultConvertDto>> getAllConvert() {
-        List<ResultConvertDto> books = bookService.getAllConvert();
+    ResponseEntity<Page<ResultConvertDto>> getAllConvert(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                         @RequestParam(value = "size", defaultValue = "5") int size) {
+        Page<ResultConvertDto> books = bookService.getAllConvert(page, size);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
