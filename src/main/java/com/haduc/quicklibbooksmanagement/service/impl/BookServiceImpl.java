@@ -69,6 +69,9 @@ public class BookServiceImpl implements BookService {
         List<ResultDto> resultDtoList = new ArrayList<>();
         for(Book book : bookList){
             BookDto bookDto = bookMapper.toBookDto(book);
+            Category category = categoryRepository.findById(book.getCategory().getParent_category_id()).orElse(null);
+            String category_name = category != null ? category.getName(): "";
+            bookDto.getCategory().setParent_category_name(category_name);
             List<Author> authorList = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
                     .collect(Collectors.toList());
@@ -81,6 +84,7 @@ public class BookServiceImpl implements BookService {
             List<LibraryDto> libraryDtos = libraryList.stream()
                     .map(library -> libraryMapper.toLibraryDto(library))
                     .collect(Collectors.toList());
+
             // lay ra so luong sach cua tung thu vien
             List<LibraryBookInfoDto> libraryBookInfoDtos = new ArrayList<>();
             for(LibraryDto libraryDto : libraryDtos){
@@ -287,6 +291,9 @@ public class BookServiceImpl implements BookService {
         }
         for (Book book : books) {
             BookDto bookDto = bookMapper.toBookDto(book);
+            Category category = categoryRepository.findById(book.getCategory().getParent_category_id()).orElse(null);
+            String category_name = category != null ? category.getName(): "";
+            bookDto.getCategory().setParent_category_name(category_name);
             List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
                     .map(author -> authorMapper.toAuthorDto(author))
