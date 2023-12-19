@@ -60,5 +60,5 @@ public interface BookRepository extends JpaRepository<Book, Long>, PagingAndSort
     Page<Book> findByAuthorName(String authorName, Pageable pageable);
     @Query(value = "SELECT DISTINCT b.* FROM books b JOIN book_instances lb ON b.id = lb.book_id JOIN libraries l ON lb.library_id = l.id WHERE LOWER(l.name) LIKE LOWER(CONCAT('%', :libraryName, '%'))", nativeQuery = true)
     Page<Book> findByLibraryName(String libraryName, Pageable pageable);
-
+    Page<Book> findByCategoryId(Long categoryId, Pageable pageable);
 }

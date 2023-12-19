@@ -31,12 +31,8 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10)
     private UserRole role;
 
-    @Temporal(TemporalType.DATE)
     private Date createdAt;
-
-    @Temporal(TemporalType.DATE)
     private Date updatedAt;
 }

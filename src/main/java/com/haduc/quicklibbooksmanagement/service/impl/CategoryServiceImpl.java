@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -41,6 +43,6 @@ public class CategoryServiceImpl implements CategoryService {
                     }
                     return categoryDto;
                 })
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

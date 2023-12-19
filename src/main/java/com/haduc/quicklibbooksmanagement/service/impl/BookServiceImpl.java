@@ -255,6 +255,10 @@ public class BookServiceImpl implements BookService {
             return getAll(page, size);
         }
         if(categoryId != null && categoryId > 0){
+            if(title == null && authorName == null && publishYear == null && libraryName == null){
+                books = bookRepository.findByCategoryId(categoryId, PageRequest.of(page-1, size));
+            }
+
             if(title != null && !title.isEmpty()){
                 books = findByTitleAndCategoryId(title, categoryId, page, size);
             }
@@ -288,6 +292,8 @@ public class BookServiceImpl implements BookService {
             if(libraryName != null && !libraryName.isEmpty()) {
                 books = bookRepository.findByLibraryName(libraryName, PageRequest.of(page-1, size));
             }
+
+
         }
         for (Book book : books) {
             BookDto bookDto = bookMapper.toBookDto(book);

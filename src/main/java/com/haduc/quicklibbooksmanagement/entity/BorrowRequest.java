@@ -1,12 +1,16 @@
 package com.haduc.quicklibbooksmanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "borrow_request")
@@ -21,7 +25,6 @@ public class BorrowRequest {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
@@ -29,10 +32,8 @@ public class BorrowRequest {
     private BorrowStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "library_id", nullable = false)
     private Library library;
 
-    @Column(name = "borrow_date")
     private Date borrowDate;
 
     @Column(name = "request_due_date")
@@ -49,5 +50,8 @@ public class BorrowRequest {
 
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @OneToMany(mappedBy = "borrowRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BorrowBookInstance> borrowBookInstances;
 
 }
