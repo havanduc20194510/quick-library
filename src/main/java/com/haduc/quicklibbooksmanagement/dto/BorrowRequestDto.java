@@ -1,5 +1,6 @@
 package com.haduc.quicklibbooksmanagement.dto;
 
+import com.haduc.quicklibbooksmanagement.entity.BorrowBookInstance;
 import com.haduc.quicklibbooksmanagement.entity.BorrowStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +25,6 @@ public class BorrowRequestDto {
     private String code;
     private Date createdAt;
     private Date updatedAt;
+
+    private List<BorrowBookInstance> borrowBookInstances;
 }

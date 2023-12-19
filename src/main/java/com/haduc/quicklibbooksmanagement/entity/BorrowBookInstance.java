@@ -17,7 +17,7 @@ import java.util.Date;
 public class BorrowBookInstance {
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "created_at")

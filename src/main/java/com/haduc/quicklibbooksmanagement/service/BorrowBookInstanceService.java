@@ -4,6 +4,6 @@ import com.haduc.quicklibbooksmanagement.dto.BorrowBookInstanceDto;
 
 public interface BorrowBookInstanceService {
 
-    BorrowBookInstanceDto create(BorrowBookInstanceDto borrowBookInstanceDto);
+    String create(Long userId, Long bookInstanceId);
 
 }
