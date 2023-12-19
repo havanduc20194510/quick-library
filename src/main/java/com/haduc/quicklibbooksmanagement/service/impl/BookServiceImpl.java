@@ -256,7 +256,7 @@ public class BookServiceImpl implements BookService {
         }
         if(categoryId != null && categoryId > 0){
             if(title == null && authorName == null && publishYear == null && libraryName == null){
-                books = bookRepository.findByCategoryId(categoryId, PageRequest.of(page-1, size));
+                books = bookRepository.findByCategoryIdOrParentCategoryId(categoryId, PageRequest.of(page-1, size));
             }
 
             if(title != null && !title.isEmpty()){

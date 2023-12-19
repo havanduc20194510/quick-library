@@ -32,6 +32,6 @@ public class BorrowBookInstance {
 
     @ManyToOne
     @JoinColumn(name = "book_instance_id")
-    private LibraryBook bookInstance;
+    private LibraryBook libraryBook;
 
 }
