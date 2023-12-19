@@ -1,6 +1,7 @@
 package com.haduc.quicklibbooksmanagement.service.impl;
 
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestDto;
+import com.haduc.quicklibbooksmanagement.dto.BorrowRequestInfo;
 import com.haduc.quicklibbooksmanagement.entity.BorrowRequest;
 import com.haduc.quicklibbooksmanagement.entity.BorrowStatus;
 import com.haduc.quicklibbooksmanagement.entity.Library;
@@ -75,5 +76,11 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     public List<BorrowRequestDto> getAllBorrowRequests() {
         List<BorrowRequest> borrowRequests = borrowRequestRepository.findAll();
         return borrowRequests.stream().map(borrowRequestMapper::toBorrowRequestDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BorrowRequestInfo> getBorrowRequestsByUserId(Long userId) {
+        List<BorrowRequestInfo> borrowRequestInfos = borrowRequestRepository.findByUserIdAndCount(userId);
+        return borrowRequestInfos;
     }
 }
