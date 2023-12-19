@@ -9,7 +9,6 @@ public interface BookInfoDto {
     Long getId();
     String getTitle();
     String getDescription();
-    int getQuantity();
     String getCover_image_url();
     int getPublish_year();
     String getPublisher();

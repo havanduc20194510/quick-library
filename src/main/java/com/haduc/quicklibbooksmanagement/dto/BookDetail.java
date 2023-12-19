@@ -16,7 +16,6 @@ public class BookDetail {
     private Long id;
     private String title;
     private String description;
-    private int quantity;
     private String cover_image_url;
     private int publish_year;
     private String publisher;

@@ -16,7 +16,6 @@ public class BookDto {
     private Long id;
     private String title;
     private String description;
-    private int quantity;
     private String cover_image_url;
     private CategoryDto category;
     private int publish_year;

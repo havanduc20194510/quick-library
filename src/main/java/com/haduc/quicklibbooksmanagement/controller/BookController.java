@@ -29,8 +29,9 @@ public class BookController {
     }
 
     @GetMapping("/list")
-    ResponseEntity<List<ResultDto>> getAll() {
-        List<ResultDto> books = bookService.getAll();
+    ResponseEntity<Page<ResultDto>> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
+                                           @RequestParam(value = "size", defaultValue = "5") int size) {
+        Page<ResultDto> books = bookService.getAll(page, size);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
@@ -48,12 +49,14 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    ResponseEntity<List<ResultDto>> search(@RequestParam(value = "title", required = false) String title,
+    ResponseEntity<Page<ResultDto>> search(@RequestParam(value = "title", required = false) String title,
                                       @RequestParam(value = "authorName", required = false) String authorName,
                                       @RequestParam(value = "publishYear", required = false) Integer publishYear,
                                       @RequestParam(value = "libraryName", required = false) String libraryName,
-                                      @RequestParam(value = "categoryId", required = false) Long categoryId) {
-        List<ResultDto> books = bookService.search(title, authorName, publishYear, libraryName, categoryId);
+                                      @RequestParam(value = "categoryId", required = false) Long categoryId,
+                                           @RequestParam(value = "page", defaultValue = "1") int page,
+                                           @RequestParam(value = "size", defaultValue = "5") int size) {
+        Page<ResultDto> books = bookService.search(title, authorName, publishYear, libraryName, categoryId, page, size);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 

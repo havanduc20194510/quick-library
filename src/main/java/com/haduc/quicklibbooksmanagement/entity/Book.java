@@ -23,8 +23,6 @@ public class Book {
     private String title;
     @Column(nullable = false, length = 255)
     private String description;
-    @Column(nullable = false)
-    private int quantity;
     private String cover_image_url;
     @ManyToOne
     private Category category;

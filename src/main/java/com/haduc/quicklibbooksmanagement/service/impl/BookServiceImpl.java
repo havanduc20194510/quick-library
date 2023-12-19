@@ -38,7 +38,6 @@ public class BookServiceImpl implements BookService {
     private LibraryBookRepository libraryBooRepository;
 
     private LibraryMapper libraryMapper;
-    private final AuthorRepository authorRepository;
 
 
     @Override
@@ -64,8 +63,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<ResultDto> getAll() {
-        List<Book> bookList = bookRepository.findAll();
+    public Page<ResultDto> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Book> bookList = bookRepository.findAll(pageable);
         List<ResultDto> resultDtoList = new ArrayList<>();
         for(Book book : bookList){
             BookDto bookDto = bookMapper.toBookDto(book);
@@ -81,34 +81,60 @@ public class BookServiceImpl implements BookService {
             List<LibraryDto> libraryDtos = libraryList.stream()
                     .map(library -> libraryMapper.toLibraryDto(library))
                     .collect(Collectors.toList());
-            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryDtos);
+            // lay ra so luong sach cua tung thu vien
+            List<LibraryBookInfoDto> libraryBookInfoDtos = new ArrayList<>();
+            for(LibraryDto libraryDto : libraryDtos){
+                LibraryBookInfoDto libraryBookInfoDto = new LibraryBookInfoDto();
+                libraryBookInfoDto.setLibrary(libraryDto);
+                int quantity = book.getLibraryBooks().stream()
+                        .filter(libraryBook -> libraryBook.getLibrary().getId().equals(libraryDto.getId()))
+                        .mapToInt(libraryBook -> libraryBook.getQuantity())
+                        .sum();
+                libraryBookInfoDto.setQuantity(quantity);
+                libraryBookInfoDtos.add(libraryBookInfoDto);
+            }
+            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryBookInfoDtos);
             resultDtoList.add(resultDto);
         }
-        return resultDtoList;
+        resultDtoList.sort((o1, o2) -> o1.getBook().getTitle().compareTo(o2.getBook().getTitle()));
+        return new PageImpl<>(resultDtoList, pageable, bookList.getTotalElements());
     }
 
     @Override
     public BookInstanceDto getById(Long id) {
-        Book book = libraryBooRepository.findById(id).get().getBook();
+        Book book = bookRepository.findById(id).orElse(null);
         BookDto bookDto = bookMapper.toBookDto(book);
-        List<Long> authorIds = book.getAuthorBooks().stream()
-                .map(authorBook -> authorBook.getAuthor().getId())
-                .collect(Collectors.toList());
-        Library library = libraryBooRepository.findById(id).get().getLibrary();
-        LibraryDto libraryDto = libraryMapper.toLibraryDto(library);
         List<Author> authorList = book.getAuthorBooks().stream()
                 .map(authorBook -> authorBook.getAuthor())
                 .collect(Collectors.toList());
         List<AuthorDto> authorDtos = authorList.stream()
                 .map(author -> authorMapper.toAuthorDto(author))
                 .collect(Collectors.toList());
-
-        List<Book> ortherBooks = bookRepository.findAll().stream()
+        List<Library> libraryList = book.getLibraryBooks().stream()
+                .map(libraryBook -> libraryBook.getLibrary())
+                .collect(Collectors.toList());
+        List<LibraryDto> libraryDtos = libraryList.stream()
+                .map(library -> libraryMapper.toLibraryDto(library))
+                .collect(Collectors.toList());
+        // lay ra so luong sach cua tung thu vien
+        List<LibraryBookInfoDto> libraryBookInfoDtos = new ArrayList<>();
+        for(LibraryDto libraryDto : libraryDtos){
+            LibraryBookInfoDto libraryBookInfoDto = new LibraryBookInfoDto();
+            libraryBookInfoDto.setLibrary(libraryDto);
+            int quantity = book.getLibraryBooks().stream()
+                    .filter(libraryBook -> libraryBook.getLibrary().getId().equals(libraryDto.getId()))
+                    .mapToInt(libraryBook -> libraryBook.getQuantity())
+                    .sum();
+            libraryBookInfoDto.setQuantity(quantity);
+            libraryBookInfoDtos.add(libraryBookInfoDto);
+        }
+        // lay ra nhung cuon sach khac cua cung tac gia voi book
+        List<Book> otherBooks = bookRepository.findAll().stream()
                 .filter(book1 -> {
                     List<Long> authorIds1 = book1.getAuthorBooks().stream()
                             .map(authorBook -> authorBook.getAuthor().getId())
                             .collect(Collectors.toList());
-                    for(Long authorId : authorIds){
+                    for(Long authorId : authorDtos.stream().map(authorDto -> authorDto.getId()).collect(Collectors.toList())){
                         if(authorIds1.contains(authorId) && !book1.getId().equals(book.getId())){
                             return true;
                         }
@@ -116,12 +142,11 @@ public class BookServiceImpl implements BookService {
                     return false;
                 })
                 .collect(Collectors.toList());
-
-        List<BookDto> ortherBookDtos = ortherBooks.stream()
+        List<BookDto> otherBookDtos = otherBooks.stream()
                 .map(book1 -> bookMapper.toBookDto(book1))
                 .collect(Collectors.toList());
 
-        BookInstanceDto bookInstanceDto = new BookInstanceDto(bookDto, authorDtos, libraryDto, ortherBookDtos);
+        BookInstanceDto bookInstanceDto = new BookInstanceDto(bookDto, authorDtos, libraryBookInfoDtos,otherBookDtos);
         return bookInstanceDto;
     }
 
@@ -219,57 +244,48 @@ public class BookServiceImpl implements BookService {
         return new PageImpl<>(resultDtoList, PageRequest.of(page-1, size), resultDtoList.size());
     }
     @Override
-    public List<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId) {
-        List<Book> bookList = bookRepository.findAll();
-        List<Book> bookListResult = new ArrayList<>();
-        List<LibraryBook> libraryBookResult = new ArrayList<>();
-        for(Book book : bookList){
-            if(title != null && !title.isEmpty()){
-                if(!book.getTitle().toLowerCase().contains(title.toLowerCase())){
-                    continue;
-                }
-            }
-            if(authorName != null && !authorName.isEmpty()){
-                String authorNames = book.getAuthorBooks().stream()
-                        .map(authorBook -> authorBook.getAuthor().getName())
-                        .collect(Collectors.joining());
-                if(!(authorNames.toLowerCase().contains(authorName.toLowerCase()))){
-                    continue;
-                }
-            }
-            if(publishYear!=null){
-                if(book.getPublish_year() != publishYear.intValue()){
-                    continue;
-                }
-            }
-            if(libraryName != null && !libraryName.isEmpty()){
-                for(LibraryBook libraryBook : book.getLibraryBooks()) {
-                    if(!libraryBook.getLibrary().getName().toLowerCase().contains(libraryName.toLowerCase())) {
-                        //library_name = libraryBook.getLibrary().getName();
-                        continue;
-                    }
-                    if(libraryBook.getLibrary() != null) {
-                        libraryBookResult.add(libraryBook);
-                    }
-                }
-                if(libraryBookResult.isEmpty()){
-                    continue;
-                }else {
-                    book.setLibraryBooks(libraryBookResult);
-                }
-            }
-
-            if(categoryId != null && categoryId > 0){
-                Long category = book.getCategory().getId();
-                if(!category.equals(categoryId)){
-                    continue;
-                }
-            }
-            bookListResult.add(book);
-        }
+    public Page<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId, int page, int size) {
         List<ResultDto> resultDtoList = new ArrayList<>();
+        Page<Book> books = new PageImpl<>(new ArrayList<>());
+        if(title == null && authorName == null && publishYear == null && libraryName == null && categoryId == null){
+            return getAll(page, size);
+        }
+        if(categoryId != null && categoryId > 0){
+            if(title != null && !title.isEmpty()){
+                books = findByTitleAndCategoryId(title, categoryId, page, size);
+            }
 
-        for(Book book : bookListResult){
+            if(publishYear!= null){
+                int publishYearInt = publishYear.intValue();
+                books = bookRepository.findByPublishYearAndAndCategoryId(publishYearInt, categoryId, PageRequest.of(page-1, size));
+            }
+
+            if(libraryName != null && !libraryName.isEmpty()){
+                books = bookRepository.findByCategoryIdAndLibraryName(categoryId, libraryName, PageRequest.of(page-1, size));
+            }
+
+            if(authorName != null && !authorName.isEmpty()){
+                books = bookRepository.findByCategoryIdAndAuthorName(categoryId, authorName, PageRequest.of(page-1, size));
+            }
+        }else{
+            if(title != null && !title.isEmpty()){
+                books = bookRepository.findByTitleContainsIgnoreCase(title, PageRequest.of(page-1, size));
+            }
+
+            if(publishYear!= null){
+                int publishYearInt = publishYear.intValue();
+                books = bookRepository.findByPublishYear(publishYearInt, PageRequest.of(page-1, size));
+            }
+
+            if(authorName != null && !authorName.isEmpty()) {
+                books = bookRepository.findByAuthorName(authorName, PageRequest.of(page-1, size));
+            }
+
+            if(libraryName != null && !libraryName.isEmpty()) {
+                books = bookRepository.findByLibraryName(libraryName, PageRequest.of(page-1, size));
+            }
+        }
+        for (Book book : books) {
             BookDto bookDto = bookMapper.toBookDto(book);
             List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
@@ -282,14 +298,22 @@ public class BookServiceImpl implements BookService {
                     libraryDtos.add(libraryMapper.toLibraryDto(libraryBook.getLibrary()));
                 }
             }
-            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryDtos);
+            // lay ra so luong sach cua tung thu vien
+            List<LibraryBookInfoDto> libraryBookInfoDtos = new ArrayList<>();
+            for(LibraryDto libraryDto : libraryDtos){
+                LibraryBookInfoDto libraryBookInfoDto = new LibraryBookInfoDto();
+                libraryBookInfoDto.setLibrary(libraryDto);
+                int quantity = book.getLibraryBooks().stream()
+                        .filter(libraryBook -> libraryBook.getLibrary().getId().equals(libraryDto.getId()))
+                        .mapToInt(libraryBook -> libraryBook.getQuantity())
+                        .sum();
+                libraryBookInfoDto.setQuantity(quantity);
+                libraryBookInfoDtos.add(libraryBookInfoDto);
+            }
+            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryBookInfoDtos);
             resultDtoList.add(resultDto);
         }
-        // bỏ đi libaryDtos null trong resultDtoList
-        resultDtoList = resultDtoList.stream()
-                .filter(resultDto -> resultDto.getLibrarys().size() > 0)
-                .collect(Collectors.toList());
-        return resultDtoList;
+        return new PageImpl<>(resultDtoList, PageRequest.of(page-1, size), books.getTotalElements());
     }
 
     @Override
@@ -305,7 +329,6 @@ public class BookServiceImpl implements BookService {
             bookDetail.setId(bookInfoDto.getId());
             bookDetail.setTitle(bookInfoDto.getTitle());
             bookDetail.setDescription(bookInfoDto.getDescription());
-            bookDetail.setQuantity(bookInfoDto.getQuantity());
             bookDetail.setCover_image_url(bookInfoDto.getCover_image_url());
             bookDetail.setPublish_year(bookInfoDto.getPublish_year());
             bookDetail.setPublisher(bookInfoDto.getPublisher());
@@ -326,4 +349,10 @@ public class BookServiceImpl implements BookService {
         }
         return new PageImpl<>(bookDetailList, pageable, bookInfoDtoList.getTotalElements());
     }
+
+    @Override
+    public Page<Book> findByTitleAndCategoryId(String title, Long categoryId, int page, int size) {
+        return bookRepository.findByTitleContainsIgnoreCaseAndCategoryId(title, categoryId, PageRequest.of(page-1, size));
+    }
+
 }

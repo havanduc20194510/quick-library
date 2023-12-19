@@ -12,6 +12,6 @@ import java.util.List;
 public class BookInstanceDto {
     private BookDto book;
     private List<AuthorDto> authors;
-    private LibraryDto libraryDto;
+    private List<LibraryBookInfoDto> librarys;
     private List<BookDto> ortherBooks;
 }

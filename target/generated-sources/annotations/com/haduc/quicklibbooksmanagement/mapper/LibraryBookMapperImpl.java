@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-12-12T11:50:23+0700",
+    date = "2023-12-19T01:36:57+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.1 (Oracle Corporation)"
 )
 @Component
@@ -32,6 +32,7 @@ public class LibraryBookMapperImpl implements LibraryBookMapper {
         libraryBookDto.setLibrary( libraryToLibraryDto( libraryBook.getLibrary() ) );
         libraryBookDto.setStatus( libraryBook.getStatus() );
         libraryBookDto.setCode( libraryBook.getCode() );
+        libraryBookDto.setQuantity( libraryBook.getQuantity() );
         libraryBookDto.setCreated_at( libraryBook.getCreated_at() );
         libraryBookDto.setUpdated_at( libraryBook.getUpdated_at() );
 
@@ -51,6 +52,7 @@ public class LibraryBookMapperImpl implements LibraryBookMapper {
         libraryBook.setLibrary( libraryDtoToLibrary( libraryBookDto.getLibrary() ) );
         libraryBook.setStatus( libraryBookDto.getStatus() );
         libraryBook.setCode( libraryBookDto.getCode() );
+        libraryBook.setQuantity( libraryBookDto.getQuantity() );
         libraryBook.setCreated_at( libraryBookDto.getCreated_at() );
         libraryBook.setUpdated_at( libraryBookDto.getUpdated_at() );
 
@@ -83,7 +85,6 @@ public class LibraryBookMapperImpl implements LibraryBookMapper {
         bookDto.setId( book.getId() );
         bookDto.setTitle( book.getTitle() );
         bookDto.setDescription( book.getDescription() );
-        bookDto.setQuantity( book.getQuantity() );
         bookDto.setCover_image_url( book.getCover_image_url() );
         bookDto.setCategory( categoryToCategoryDto( book.getCategory() ) );
         bookDto.setPublish_year( book.getPublish_year() );
@@ -138,7 +139,6 @@ public class LibraryBookMapperImpl implements LibraryBookMapper {
         book.setId( bookDto.getId() );
         book.setTitle( bookDto.getTitle() );
         book.setDescription( bookDto.getDescription() );
-        book.setQuantity( bookDto.getQuantity() );
         book.setCover_image_url( bookDto.getCover_image_url() );
         book.setCategory( categoryDtoToCategory( bookDto.getCategory() ) );
         book.setPublish_year( bookDto.getPublish_year() );

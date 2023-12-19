@@ -36,6 +36,9 @@ public class LibraryBook {
     @Column(nullable = false, length = 255)
     private String code;
 
+    @Column(nullable = false)
+    private int quantity;
+
     private Date created_at;
 
     private Date updated_at;
