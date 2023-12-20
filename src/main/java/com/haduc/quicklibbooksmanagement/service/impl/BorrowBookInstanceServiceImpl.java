@@ -1,11 +1,13 @@
 package com.haduc.quicklibbooksmanagement.service.impl;
 
 import com.haduc.quicklibbooksmanagement.dto.BorrowBookInstanceDto;
+import com.haduc.quicklibbooksmanagement.dto.BorrowRequestBookInfo;
 import com.haduc.quicklibbooksmanagement.entity.*;
 import com.haduc.quicklibbooksmanagement.mapper.BorrowBookInstanceMapper;
 import com.haduc.quicklibbooksmanagement.repository.*;
 import com.haduc.quicklibbooksmanagement.service.BorrowBookInstanceService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,7 +27,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
 
     BorrowRequestRepository borrowRequestRepository;
     UserRepository userRepository;
-
+    private final CategoryRepository categoryRepository;
 
 
     @Override
@@ -75,11 +77,9 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
         return "add book to request successfully";
     }
 
-  /*  @Override
-    public List<BorrowBookInstanceDto> getBorrowBookInstancesByBorrowRequestId(Long borrowRequestId) {
-        List<BorrowBookInstance> borrowBookInstances = borrowBookInstanceRepository.findByBorrowRequestId(borrowRequestId);
-        return borrowBookInstances.stream().map(
-                borrowBookInstance -> borrowBookInstanceMapper.toBorrowBookInstanceDto(borrowBookInstance)
-        ).collect(Collectors.toList());
-    }*/
+    @Override
+    public List<BorrowRequestBookInfo> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId) {
+        List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBooksByBorrowRequestId(userId, borrowRequestId);
+        return borrowRequestBookInfoList;
+    }
 }
