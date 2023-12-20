@@ -16,8 +16,8 @@ public class BorrowBookInstanceController {
     BorrowBookInstanceService borrowBookInstanceService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestParam Long userId, @RequestParam Long bookInstanceId) {
-        String message = borrowBookInstanceService.create(userId, bookInstanceId);
+    public ResponseEntity<String> create(@RequestParam Long userId, @RequestParam Long bookId, @RequestParam Long libraryId) {
+        String message = borrowBookInstanceService.create(userId, bookId, libraryId);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 }

@@ -27,10 +27,10 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
 
 
     @Override
-    public String create(Long userId, Long BookInstanceId) {
+    public String create(Long userId, Long bookId, Long libraryId) {
         boolean hasRequestUnsent = false;
         BorrowBookInstanceDto borrowBookInstanceDto = new BorrowBookInstanceDto();
-        LibraryBook libraryBook = libraryBookRepository.findById(BookInstanceId).orElseThrow(() -> new RuntimeException("Book not found"));
+        LibraryBook libraryBook = libraryBookRepository.findByBookIdAndLibrary_Id(bookId,libraryId);
         Book book = libraryBook.getBook();
         Library library = libraryBook.getLibrary();
         Date currentDate = new Date();
