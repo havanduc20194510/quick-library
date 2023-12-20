@@ -46,6 +46,9 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
                     borrowBookInstanceDto.setLibraryBook(libraryBook);
                     borrowBookInstanceDto.setCreatedAt(currentDate);
                     borrowBookInstanceDto.setUpdatedAt(currentDate);
+                    if(borrowBookInstanceRepository.findByBorrowRequest_IdAndLibraryBook_Id(request.getId(),libraryBook.getId()) != null){
+                        return "book already in request";
+                    }
                     borrowBookInstanceRepository.save(borrowBookInstanceMapper.toBorrowBookInstance(borrowBookInstanceDto));
                     break;
                 }
@@ -64,6 +67,9 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
             borrowBookInstanceDto.setLibraryBook(libraryBook);
             borrowBookInstanceDto.setCreatedAt(currentDate);
             borrowBookInstanceDto.setUpdatedAt(currentDate);
+            if(borrowBookInstanceRepository.findByBorrowRequest_IdAndLibraryBook_Id(borrowRequest.getId(),libraryBook.getId()) != null){
+                return "book already in request";
+            }
             borrowBookInstanceRepository.save(borrowBookInstanceMapper.toBorrowBookInstance(borrowBookInstanceDto));
         }
         return "add book to request successfully";
