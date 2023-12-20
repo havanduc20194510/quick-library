@@ -6,10 +6,7 @@ import com.haduc.quicklibbooksmanagement.entity.*;
 import com.haduc.quicklibbooksmanagement.mapper.BorrowRequestMapper;
 import com.haduc.quicklibbooksmanagement.mapper.LibraryMapper;
 import com.haduc.quicklibbooksmanagement.mapper.UserMapper;
-import com.haduc.quicklibbooksmanagement.repository.BorrowBookInstanceRepository;
-import com.haduc.quicklibbooksmanagement.repository.BorrowRequestRepository;
-import com.haduc.quicklibbooksmanagement.repository.LibraryRepository;
-import com.haduc.quicklibbooksmanagement.repository.UserRepository;
+import com.haduc.quicklibbooksmanagement.repository.*;
 import com.haduc.quicklibbooksmanagement.service.BorrowRequestService;
 import com.haduc.quicklibbooksmanagement.util.RandomCodeGenerator;
 import lombok.AllArgsConstructor;
@@ -34,6 +31,7 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     UserMapper userMapper;
 
     private final BorrowBookInstanceRepository borrowBookInstanceRepository;
+    private final LibraryBookRepository libraryBookRepository;
 
     @Override
     public String createBorrowRequest(BorrowRequestDto borrowRequestDto, Long userId, Long libraryId) {
@@ -100,6 +98,7 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
             for(BorrowBookInstance borrowBookInstance : borrowBookInstances) {
                 LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
                 libraryBook.setQuantity(libraryBook.getQuantity() - 1);
+                libraryBookRepository.save(libraryBook);
             }
             return "Sent borrow request successfully" + "code is: " + borrowRequest.getCode();
         }
