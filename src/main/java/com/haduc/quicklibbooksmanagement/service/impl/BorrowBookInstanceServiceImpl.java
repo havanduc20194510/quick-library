@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,7 +24,8 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
     BorrowBookInstanceMapper borrowBookInstanceMapper;
 
     BorrowRequestRepository borrowRequestRepository;
-    private final UserRepository userRepository;
+    UserRepository userRepository;
+
 
 
     @Override
@@ -66,4 +68,12 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
         }
         return "add book to request successfully";
     }
+
+  /*  @Override
+    public List<BorrowBookInstanceDto> getBorrowBookInstancesByBorrowRequestId(Long borrowRequestId) {
+        List<BorrowBookInstance> borrowBookInstances = borrowBookInstanceRepository.findByBorrowRequestId(borrowRequestId);
+        return borrowBookInstances.stream().map(
+                borrowBookInstance -> borrowBookInstanceMapper.toBorrowBookInstanceDto(borrowBookInstance)
+        ).collect(Collectors.toList());
+    }*/
 }
