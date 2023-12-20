@@ -1,5 +1,6 @@
 package com.haduc.quicklibbooksmanagement.service;
 
+import com.haduc.quicklibbooksmanagement.dto.BorrowBookInfor;
 import com.haduc.quicklibbooksmanagement.dto.BorrowBookInstanceDto;
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestBookInfo;
 
@@ -9,7 +10,7 @@ public interface BorrowBookInstanceService {
 
     String create(Long userId, Long bookId, Long libraryId);
 
-    List<BorrowRequestBookInfo> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId);
+    List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId);
 
 
 }

@@ -1,5 +1,6 @@
 package com.haduc.quicklibbooksmanagement.service.impl;
 
+import com.haduc.quicklibbooksmanagement.dto.BorrowBookInfor;
 import com.haduc.quicklibbooksmanagement.dto.BorrowBookInstanceDto;
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestBookInfo;
 import com.haduc.quicklibbooksmanagement.entity.*;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,8 +80,19 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
     }
 
     @Override
-    public List<BorrowRequestBookInfo> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId) {
+    public List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId) {
         List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBooksByBorrowRequestId(userId, borrowRequestId);
-        return borrowRequestBookInfoList;
+        List<BorrowBookInfor> borrowBookInforList = new ArrayList<>();
+        for (BorrowRequestBookInfo borrowRequestBookInfo : borrowRequestBookInfoList) {
+            BorrowBookInfor borrowBookInfor = new BorrowBookInfor();
+            borrowBookInfor.setBookInfo(borrowRequestBookInfo);
+            if(borrowRequestBookInfo.getParentCategoryId() != null && borrowRequestBookInfo.getParentCategoryId() > 0){
+                Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).get();
+                borrowBookInfor.setParentCategoryName(category.getName());
+
+            }
+            borrowBookInforList.add(borrowBookInfor);
+        }
+        return borrowBookInforList;
     }
 }
