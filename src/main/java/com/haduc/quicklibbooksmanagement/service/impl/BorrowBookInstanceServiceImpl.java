@@ -54,7 +54,6 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
                     break;
                 }
             }
-
         }else {
             BorrowRequest borrowRequest = new BorrowRequest();
             User user = userRepository.findById(userId).get();
@@ -86,7 +85,6 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
             if(borrowRequestBookInfo.getParentCategoryId() != null && borrowRequestBookInfo.getParentCategoryId() > 0){
                 Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).get();
                 borrowBookInfor.setParentCategoryName(category.getName());
-
             }
             borrowBookInforList.add(borrowBookInfor);
         }

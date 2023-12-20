@@ -39,8 +39,15 @@ public class BorrowRequestController {
 
     @PostMapping("/sent/{borrow_request_id}")
     public ResponseEntity<String> sentBorrowRequest(@PathVariable("borrow_request_id") Long borrowRequestId, @RequestParam("borrow_date") String borrowDateStr, @RequestParam("request_due_date") String requestDueDateStr) throws ParseException {
+        if(borrowDateStr == null || requestDueDateStr == null) {
+            return new ResponseEntity<>("Date is null", HttpStatus.BAD_REQUEST);
+        }
+
         Date borrowDate = DateTimeUtils.convertStringToDate(borrowDateStr);
         Date requestDueDate = DateTimeUtils.convertStringToDate(requestDueDateStr);
+        if(borrowDate == null || requestDueDate == null) {
+            return new ResponseEntity<>("Date is invalid", HttpStatus.BAD_REQUEST);
+        }
         String message = borrowRequestService.sentBorrowRequest(borrowRequestId, borrowDate, requestDueDate);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
