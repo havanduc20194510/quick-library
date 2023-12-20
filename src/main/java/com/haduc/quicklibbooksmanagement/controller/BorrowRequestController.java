@@ -44,7 +44,9 @@ public class BorrowRequestController {
             if (StringUtils.isBlank(borrowDateStr) || StringUtils.isBlank(requestDueDateStr)) {
                 return new ResponseEntity<>("Date is null", HttpStatus.BAD_REQUEST);
             }
-
+            if(borrowDateStr.equals("NaN-NaN-NaN") || requestDueDateStr.equals("NaN-NaN-NaN")){
+                return new ResponseEntity<>("Date is invalid", HttpStatus.BAD_REQUEST);
+            }
             Date borrowDate = DateTimeUtils.convertStringToDate(borrowDateStr);
             Date requestDueDate = DateTimeUtils.convertStringToDate(requestDueDateStr);
 
