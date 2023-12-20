@@ -8,13 +8,11 @@ import com.haduc.quicklibbooksmanagement.mapper.BorrowBookInstanceMapper;
 import com.haduc.quicklibbooksmanagement.repository.*;
 import com.haduc.quicklibbooksmanagement.service.BorrowBookInstanceService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,23 +27,22 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
 
     BorrowRequestRepository borrowRequestRepository;
     UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
+    CategoryRepository categoryRepository;
 
 
     @Override
     public String create(Long userId, Long bookId, Long libraryId) {
-        boolean hasRequestUnsent = false;
         BorrowBookInstanceDto borrowBookInstanceDto = new BorrowBookInstanceDto();
         LibraryBook libraryBook = libraryBookRepository.findByBookIdAndLibrary_Id(bookId,libraryId);
-        Book book = libraryBook.getBook();
         Library library = libraryBook.getLibrary();
         Date currentDate = new Date();
-
+        if(libraryBook.getQuantity() <= 0){
+            return "book out of stock";
+        }
         List<BorrowRequest> borrowRequests = bookRequestRepository.findByUserIdAndLibraryId(userId, library.getId());
         if (borrowRequests.size() > 0) {
             for (BorrowRequest request : borrowRequests) {
                 if (request.getStatus().equals(BorrowStatus.UNSENT)) {
-                    hasRequestUnsent = true;
                     borrowBookInstanceDto.setBorrowRequest(request);
                     borrowBookInstanceDto.setLibraryBook(libraryBook);
                     borrowBookInstanceDto.setCreatedAt(currentDate);

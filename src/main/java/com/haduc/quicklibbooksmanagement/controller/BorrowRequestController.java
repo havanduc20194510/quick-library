@@ -45,4 +45,11 @@ public class BorrowRequestController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity<String> validateBorrowRequest(@RequestParam("code") String code) {
+        String message = borrowRequestService.acceptBorrowRequest(code);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+
 }

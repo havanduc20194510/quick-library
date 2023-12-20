@@ -23,15 +23,15 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     BorrowRequestRepository borrowRequestRepository;
 
     BorrowRequestMapper borrowRequestMapper;
-    private final LibraryRepository libraryRepository;
-    private final UserRepository userRepository;
+    LibraryRepository libraryRepository;
+    UserRepository userRepository;
 
     LibraryMapper libraryMapper;
 
     UserMapper userMapper;
 
-    private final BorrowBookInstanceRepository borrowBookInstanceRepository;
-    private final LibraryBookRepository libraryBookRepository;
+    BorrowBookInstanceRepository borrowBookInstanceRepository;
+    LibraryBookRepository libraryBookRepository;
 
     @Override
     public String createBorrowRequest(BorrowRequestDto borrowRequestDto, Long userId, Long libraryId) {
@@ -100,13 +100,27 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
                 libraryBook.setQuantity(libraryBook.getQuantity() - 1);
                 libraryBookRepository.save(libraryBook);
             }
-            return "Sent borrow request successfully" + "code is: " + borrowRequest.getCode();
+            return "Sent borrow request successfully" + "-" + "code is: " + borrowRequest.getCode();
         }
-        return "Borrow request has been sent" + "code is: " + borrowRequest.getCode();
+        return "Borrow request has been sent" + "-" + "code is: " + borrowRequest.getCode();
     }
 
     @Override
     public String deleteBorrowRequest(Long borrowRequestId) {
         return null;
+    }
+
+    @Override
+    public String acceptBorrowRequest(String code) {
+        BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);
+        if(borrowRequest != null) {
+            if(borrowRequest.getStatus().equals(BorrowStatus.REQUESTED)) {
+                borrowRequest.setStatus(BorrowStatus.BORROWING);
+                borrowRequestRepository.save(borrowRequest);
+                return "Validate borrow request successfully";
+            }
+            return "Borrow request has been accepted";
+        }
+        return "Validate borrow request failed";
     }
 }
