@@ -2,17 +2,16 @@ package com.haduc.quicklibbooksmanagement.service.impl;
 
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestDto;
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestInfo;
-import com.haduc.quicklibbooksmanagement.entity.BorrowRequest;
-import com.haduc.quicklibbooksmanagement.entity.BorrowStatus;
-import com.haduc.quicklibbooksmanagement.entity.Library;
-import com.haduc.quicklibbooksmanagement.entity.User;
+import com.haduc.quicklibbooksmanagement.entity.*;
 import com.haduc.quicklibbooksmanagement.mapper.BorrowRequestMapper;
 import com.haduc.quicklibbooksmanagement.mapper.LibraryMapper;
 import com.haduc.quicklibbooksmanagement.mapper.UserMapper;
+import com.haduc.quicklibbooksmanagement.repository.BorrowBookInstanceRepository;
 import com.haduc.quicklibbooksmanagement.repository.BorrowRequestRepository;
 import com.haduc.quicklibbooksmanagement.repository.LibraryRepository;
 import com.haduc.quicklibbooksmanagement.repository.UserRepository;
 import com.haduc.quicklibbooksmanagement.service.BorrowRequestService;
+import com.haduc.quicklibbooksmanagement.util.RandomCodeGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +32,8 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     LibraryMapper libraryMapper;
 
     UserMapper userMapper;
+
+    private final BorrowBookInstanceRepository borrowBookInstanceRepository;
 
     @Override
     public String createBorrowRequest(BorrowRequestDto borrowRequestDto, Long userId, Long libraryId) {
@@ -82,5 +83,31 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     public List<BorrowRequestInfo> getBorrowRequestsByUserId(Long userId) {
         List<BorrowRequestInfo> borrowRequestInfos = borrowRequestRepository.findByUserIdAndCount(userId);
         return borrowRequestInfos;
+    }
+
+    @Override
+    public String sentBorrowRequest(Long borrowRequestId, Date borrowDate, Date requestDueDate) {
+        BorrowRequest borrowRequest = borrowRequestRepository.findById(borrowRequestId).get();
+        RandomCodeGenerator randomCodeGenerator = new RandomCodeGenerator();
+        String code = randomCodeGenerator.generateRandomCode();
+        if(borrowRequest.getStatus().equals(BorrowStatus.UNSENT)) {
+            borrowRequest.setStatus(BorrowStatus.REQUESTED);
+            borrowRequest.setBorrowDate(borrowDate);
+            borrowRequest.setRequestDueDate(requestDueDate);
+            borrowRequest.setCode(code);
+            borrowRequestRepository.save(borrowRequest);
+            List<BorrowBookInstance> borrowBookInstances = borrowBookInstanceRepository.findByBorrowRequest_Id(borrowRequestId);
+            for(BorrowBookInstance borrowBookInstance : borrowBookInstances) {
+                LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
+                libraryBook.setQuantity(libraryBook.getQuantity() - 1);
+            }
+            return "Sent borrow request successfully" + "code is: " + borrowRequest.getCode();
+        }
+        return "Borrow request has been sent" + "code is: " + borrowRequest.getCode();
+    }
+
+    @Override
+    public String deleteBorrowRequest(Long borrowRequestId) {
+        return null;
     }
 }
