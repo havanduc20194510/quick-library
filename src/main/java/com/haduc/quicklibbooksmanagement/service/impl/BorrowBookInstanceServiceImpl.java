@@ -52,6 +52,25 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
                     }
                     borrowBookInstanceRepository.save(borrowBookInstanceMapper.toBorrowBookInstance(borrowBookInstanceDto));
                     break;
+                }else if(!request.getStatus().equals(BorrowStatus.RETURNED)) {
+                    return "book already in requested list. Cannot add more book";
+                }else {
+                    BorrowRequest borrowRequest = new BorrowRequest();
+                    User user = userRepository.findById(userId).get();
+                    borrowRequest.setUser(user);
+                    borrowRequest.setLibrary(library);
+                    borrowRequest.setStatus(BorrowStatus.UNSENT);
+                    borrowRequest.setCreatedAt(currentDate);
+                    borrowRequest.setUpdatedAt(currentDate);
+                    borrowRequestRepository.save(borrowRequest);
+                    borrowBookInstanceDto.setBorrowRequest(borrowRequest);
+                    borrowBookInstanceDto.setLibraryBook(libraryBook);
+                    borrowBookInstanceDto.setCreatedAt(currentDate);
+                    borrowBookInstanceDto.setUpdatedAt(currentDate);
+                    if(borrowBookInstanceRepository.findByBorrowRequest_IdAndLibraryBook_Id(borrowRequest.getId(),libraryBook.getId()) != null){
+                        return "book already in request";
+                    }
+                    borrowBookInstanceRepository.save(borrowBookInstanceMapper.toBorrowBookInstance(borrowBookInstanceDto));
                 }
             }
         }else {
@@ -78,6 +97,22 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
     @Override
     public List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId) {
         List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBooksByBorrowRequestId(userId, borrowRequestId);
+        List<BorrowBookInfor> borrowBookInforList = new ArrayList<>();
+        for (BorrowRequestBookInfo borrowRequestBookInfo : borrowRequestBookInfoList) {
+            BorrowBookInfor borrowBookInfor = new BorrowBookInfor();
+            borrowBookInfor.setBookInfo(borrowRequestBookInfo);
+            if(borrowRequestBookInfo.getParentCategoryId() != null && borrowRequestBookInfo.getParentCategoryId() > 0){
+                Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).get();
+                borrowBookInfor.setParentCategoryName(category.getName());
+            }
+            borrowBookInforList.add(borrowBookInfor);
+        }
+        return borrowBookInforList;
+    }
+
+    @Override
+    public List<BorrowBookInfor> getBorrowBookInstancesByUserId(Long userId) {
+        List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBorrowBookByUserId(userId);
         List<BorrowBookInfor> borrowBookInforList = new ArrayList<>();
         for (BorrowRequestBookInfo borrowRequestBookInfo : borrowRequestBookInfoList) {
             BorrowBookInfor borrowBookInfor = new BorrowBookInfor();

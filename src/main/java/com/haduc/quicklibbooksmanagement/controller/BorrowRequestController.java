@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -68,5 +67,9 @@ public class BorrowRequestController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-
+    @DeleteMapping("/delete/{borrow_request_id}")
+    public ResponseEntity<String> deleteBorrowRequest(@PathVariable("borrow_request_id") Long borrowRequestId) {
+        String message = borrowRequestService.deleteBorrowRequest(borrowRequestId);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }

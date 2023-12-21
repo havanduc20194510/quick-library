@@ -97,7 +97,8 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
             List<BorrowBookInstance> borrowBookInstances = borrowBookInstanceRepository.findByBorrowRequest_Id(borrowRequestId);
             for(BorrowBookInstance borrowBookInstance : borrowBookInstances) {
                 LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
-                libraryBook.setQuantity(libraryBook.getQuantity() - 1);
+                int quantity = libraryBook.getQuantity() - 1;
+                libraryBook.setQuantity(quantity);
                 libraryBookRepository.save(libraryBook);
             }
             return "Sent borrow request successfully" + "-" + "code is: " + borrowRequest.getCode();
@@ -107,9 +108,20 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
 
     @Override
     public String deleteBorrowRequest(Long borrowRequestId) {
-        return null;
+        BorrowRequest borrowRequestDelete = borrowRequestRepository.findById(borrowRequestId).get();
+        if(borrowRequestDelete.getStatus().equals(BorrowStatus.UNSENT) || borrowRequestDelete.getStatus().equals(BorrowStatus.REQUESTED)){
+            List<BorrowBookInstance> borrowBookInstances = borrowBookInstanceRepository.findByBorrowRequest_Id(borrowRequestId);
+            for(BorrowBookInstance borrowBookInstance : borrowBookInstances) {
+                LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
+                int quantity = libraryBook.getQuantity() + 1;
+                libraryBook.setQuantity(quantity);
+                libraryBookRepository.save(libraryBook);
+            }
+            borrowRequestRepository.deleteById(borrowRequestId);
+            return "Delete borrow request successfully";
+        }
+        return "Delete borrow request failed!. Borrow request has been accepted";
     }
-
     @Override
     public String acceptBorrowRequest(String code) {
         BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);

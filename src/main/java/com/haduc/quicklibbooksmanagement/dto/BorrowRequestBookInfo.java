@@ -1,5 +1,6 @@
 package com.haduc.quicklibbooksmanagement.dto;
 
+import com.haduc.quicklibbooksmanagement.entity.BorrowStatus;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
@@ -27,6 +28,12 @@ public interface BorrowRequestBookInfo {
     Long getBorrowRequestId();
     @Value("#{target.request_date}")
     Date getRequestDate();
+    @Value("#{target.borrow_date}")
+    Date getBorrowDate();
+    @Value("#{target.request_due_date}")
+    Date getRequestDueDate();
+    @Value("#{target.status_request}")
+    String getStatus();
     @Value("#{target.borrow_book_instance_id}")
     Long getBorrowBookInstanceId();
 }

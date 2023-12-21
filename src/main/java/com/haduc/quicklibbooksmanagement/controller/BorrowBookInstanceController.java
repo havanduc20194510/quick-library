@@ -1,8 +1,6 @@
 package com.haduc.quicklibbooksmanagement.controller;
 
 import com.haduc.quicklibbooksmanagement.dto.BorrowBookInfor;
-import com.haduc.quicklibbooksmanagement.dto.BorrowBookInstanceDto;
-import com.haduc.quicklibbooksmanagement.dto.BorrowRequestBookInfo;
 import com.haduc.quicklibbooksmanagement.service.BorrowBookInstanceService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +24,11 @@ public class BorrowBookInstanceController {
     @GetMapping("/list")
     public ResponseEntity<List<BorrowBookInfor>> getBorrowBookInstancesByBorrowRequestId(@RequestParam("user_id") Long userId, @RequestParam("borrow_request_id") Long borrowRequestId){
         List<BorrowBookInfor> borrowBookInstanceDtoList = borrowBookInstanceService.getBorrowBookInstancesByBorrowRequestId(userId, borrowRequestId);
+        return new ResponseEntity<>(borrowBookInstanceDtoList, HttpStatus.OK);
+    }
+    @GetMapping("/list/{user_id}")
+    public ResponseEntity<List<BorrowBookInfor>> getBorrowBookInstancesByUserId(@PathVariable("user_id") Long userId){
+        List<BorrowBookInfor> borrowBookInstanceDtoList = borrowBookInstanceService.getBorrowBookInstancesByUserId(userId);
         return new ResponseEntity<>(borrowBookInstanceDtoList, HttpStatus.OK);
     }
 }
