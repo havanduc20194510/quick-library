@@ -72,6 +72,9 @@ public class BookServiceImpl implements BookService {
             Category category = categoryRepository.findById(book.getCategory().getParent_category_id()).orElse(null);
             String category_name = category != null ? category.getName(): "";
             bookDto.getCategory().setParent_category_name(category_name);
+            int totalQuantity = book.getLibraryBooks().stream()
+                    .mapToInt(libraryBook -> libraryBook.getQuantity())
+                    .sum();
             List<Author> authorList = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
                     .collect(Collectors.toList());
@@ -94,10 +97,11 @@ public class BookServiceImpl implements BookService {
                         .filter(libraryBook -> libraryBook.getLibrary().getId().equals(libraryDto.getId()))
                         .mapToInt(libraryBook -> libraryBook.getQuantity())
                         .sum();
+
                 libraryBookInfoDto.setQuantity(quantity);
                 libraryBookInfoDtos.add(libraryBookInfoDto);
             }
-            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryBookInfoDtos);
+            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryBookInfoDtos,totalQuantity);
             resultDtoList.add(resultDto);
         }
         resultDtoList.sort((o1, o2) -> o1.getBook().getTitle().compareTo(o2.getBook().getTitle()));
@@ -300,6 +304,9 @@ public class BookServiceImpl implements BookService {
             Category category = categoryRepository.findById(book.getCategory().getParent_category_id()).orElse(null);
             String category_name = category != null ? category.getName(): "";
             bookDto.getCategory().setParent_category_name(category_name);
+            int totalQuantity = book.getLibraryBooks().stream()
+                    .mapToInt(libraryBook -> libraryBook.getQuantity())
+                    .sum();
             List<AuthorDto> authorDtos = book.getAuthorBooks().stream()
                     .map(authorBook -> authorBook.getAuthor())
                     .map(author -> authorMapper.toAuthorDto(author))
@@ -323,7 +330,7 @@ public class BookServiceImpl implements BookService {
                 libraryBookInfoDto.setQuantity(quantity);
                 libraryBookInfoDtos.add(libraryBookInfoDto);
             }
-            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryBookInfoDtos);
+            ResultDto resultDto = new ResultDto(bookDto, authorDtos, libraryBookInfoDtos,totalQuantity);
             resultDtoList.add(resultDto);
         }
         return new PageImpl<>(resultDtoList, PageRequest.of(page-1, size), books.getTotalElements());

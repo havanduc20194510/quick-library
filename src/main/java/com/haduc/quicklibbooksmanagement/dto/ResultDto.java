@@ -15,4 +15,5 @@ public class ResultDto {
     private BookDto book;
     private List<AuthorDto> authors;
     private List<LibraryBookInfoDto> librarys;
+    private int totalQuantity;
 }
