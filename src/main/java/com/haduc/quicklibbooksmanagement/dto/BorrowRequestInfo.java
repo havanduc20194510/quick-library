@@ -21,6 +21,7 @@ public interface BorrowRequestInfo {
     Date getRequestDueDate();
     @Value("#{target.return_date}")
     Date getReturnDate();
+    @Value("#{target.code}")
     String getCode();
     @Value("#{target.book_number}")
     int getBookNumber();
