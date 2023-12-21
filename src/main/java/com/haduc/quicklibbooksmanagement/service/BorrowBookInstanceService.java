@@ -13,6 +13,5 @@ public interface BorrowBookInstanceService {
     List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId);
 
     List<BorrowBookInfor> getBorrowBookInstancesByUserId(Long userId);
-
-
+    String deleteBookInRequest(Long borrowBookInstanceId);
 }

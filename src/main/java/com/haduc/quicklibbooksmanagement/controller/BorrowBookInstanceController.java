@@ -31,4 +31,10 @@ public class BorrowBookInstanceController {
         List<BorrowBookInfor> borrowBookInstanceDtoList = borrowBookInstanceService.getBorrowBookInstancesByUserId(userId);
         return new ResponseEntity<>(borrowBookInstanceDtoList, HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete/{borrow_book_instance_id}")
+    public ResponseEntity<String> deleteBookInRequest(@PathVariable("borrow_book_instance_id") Long borrowBookInstanceId){
+        String message = borrowBookInstanceService.deleteBookInRequest(borrowBookInstanceId);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }

@@ -111,6 +111,32 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
     }
 
     @Override
+    public String deleteBookInRequest(Long borrowBookInstanceId) {
+        BorrowBookInstance borrowBookInstance = borrowBookInstanceRepository.findById(borrowBookInstanceId).get();
+        LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
+        BorrowRequest borrowRequest = borrowBookInstance.getBorrowRequest();
+        int newQuantity = libraryBook.getQuantity() + 1;
+        if(borrowRequest.getStatus().equals(BorrowStatus.REQUESTED)){
+            libraryBook.setQuantity(newQuantity);
+            libraryBookRepository.save(libraryBook);
+            borrowBookInstanceRepository.deleteById(borrowBookInstanceId);
+            if(borrowBookInstanceRepository.findByBorrowRequest_Id(borrowRequest.getId()).size() == 0){
+                borrowRequestRepository.deleteById(borrowRequest.getId());
+            }
+            return "delete book in request successfully";
+        }else if(borrowRequest.getStatus().equals(BorrowStatus.UNSENT)){
+            libraryBookRepository.save(libraryBook);
+            borrowBookInstanceRepository.deleteById(borrowBookInstanceId);
+            if(borrowBookInstanceRepository.findByBorrowRequest_Id(borrowRequest.getId()).size() == 0){
+                borrowRequestRepository.deleteById(borrowRequest.getId());
+            }
+            return "delete book in request successfully";
+        }else {
+            return "Cannot delete book in history borrow request";
+        }
+    }
+
+    @Override
     public List<BorrowBookInfor> getBorrowBookInstancesByUserId(Long userId) {
         List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBorrowBookByUserId(userId);
         List<BorrowBookInfor> borrowBookInforList = new ArrayList<>();
