@@ -2,9 +2,9 @@ package com.haduc.quicklibbooksmanagement.controller;
 
 import com.haduc.quicklibbooksmanagement.dto.AuthenticationRequest;
 import com.haduc.quicklibbooksmanagement.dto.AuthenticationResponse;
-import com.haduc.quicklibbooksmanagement.repository.UserRepository;
 import com.haduc.quicklibbooksmanagement.service.AuthenticationService;
 import com.haduc.quicklibbooksmanagement.dto.RegisterRequest;
+import com.haduc.quicklibbooksmanagement.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,6 @@ import java.io.IOException;
 public class AuthenticationController {
     private final AuthenticationService service;
 
-    private final UserRepository userRepository;
-
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(service.register(request));
@@ -37,6 +35,4 @@ public class AuthenticationController {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         service.refreshToken(request, response);
     }
-
-
 }

@@ -40,18 +40,12 @@ public class User implements UserDetails {
     private Date updatedAt;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
     public String getUsername() {
         return email;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -73,4 +67,9 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public String getUserNameCore() {
+        return username;
+    }
+
 }
