@@ -42,7 +42,7 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     ResponseEntity<BookInstanceDto> getById(@PathVariable("id") Long id) {
         BookInstanceDto book = bookService.getById(id);
         return new ResponseEntity<>(book, HttpStatus.OK);
