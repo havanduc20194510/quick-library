@@ -7,6 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
+    private Long userId;
+    private String username;
+    private String email;
+    private String role;
     private String accessToken;
     private String refreshToken;
 }
