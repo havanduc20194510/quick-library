@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BorrowRequestServiceImpl implements BorrowRequestService {
     BorrowRequestRepository borrowRequestRepository;
-
     BorrowRequestMapper borrowRequestMapper;
     LibraryRepository libraryRepository;
     UserRepository userRepository;
@@ -56,8 +55,8 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
             // Lấy ra ngày sau khi thêm 2 ngày
             Date requestDueDate = calendar.getTime();
 
-            Library library = libraryRepository.findById(libraryId).get();
-            User user = userRepository.findById(userId).get();
+            Library library = libraryRepository.findById(libraryId).orElse(null);
+            User user = userRepository.findById(userId).orElse(null);
             borrowRequestDto.setLibrary(libraryMapper.toLibraryDto(library));
             borrowRequestDto.setUser(userMapper.toUserDto(user));
             borrowRequestDto.setStatus(BorrowStatus.UNSENT);
@@ -79,13 +78,12 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
 
     @Override
     public List<BorrowRequestInfo> getBorrowRequestsByUserId(Long userId) {
-        List<BorrowRequestInfo> borrowRequestInfos = borrowRequestRepository.findByUserIdAndCount(userId);
-        return borrowRequestInfos;
+        return borrowRequestRepository.findByUserIdAndCount(userId);
     }
 
     @Override
     public String sentBorrowRequest(Long borrowRequestId, Date borrowDate, Date requestDueDate) {
-        BorrowRequest borrowRequest = borrowRequestRepository.findById(borrowRequestId).get();
+        BorrowRequest borrowRequest = borrowRequestRepository.findById(borrowRequestId).orElse(null);
         RandomCodeGenerator randomCodeGenerator = new RandomCodeGenerator();
         String code = randomCodeGenerator.generateRandomCode();
         if(borrowRequest.getStatus().equals(BorrowStatus.UNSENT)) {
@@ -123,16 +121,16 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
         return "Delete borrow request failed!. Borrow request has been accepted";
     }
     @Override
-    public String acceptBorrowRequest(String code) {
+    public int acceptBorrowRequest(String code) {
         BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);
-        if(borrowRequest != null) {
+        if(borrowRequest == null) return -1;
+        else{
             if(borrowRequest.getStatus().equals(BorrowStatus.REQUESTED)) {
                 borrowRequest.setStatus(BorrowStatus.BORROWING);
                 borrowRequestRepository.save(borrowRequest);
-                return "Validate borrow request successfully";
+                return 1;
             }
-            return "Borrow request has been accepted";
+            return 0;
         }
-        return "Validate borrow request failed";
     }
 }

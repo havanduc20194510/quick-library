@@ -36,6 +36,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
         LibraryBook libraryBook = libraryBookRepository.findByBookIdAndLibrary_Id(bookId,libraryId);
         Library library = libraryBook.getLibrary();
         Date currentDate = new Date();
+        BorrowRequest borrowRequest = new BorrowRequest();
         if(libraryBook.getQuantity() <= 0){
             return "book out of stock";
         }
@@ -55,8 +56,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
                 }else if(!request.getStatus().equals(BorrowStatus.RETURNED)) {
                     return "book already in requested list. Cannot add more book";
                 }else {
-                    BorrowRequest borrowRequest = new BorrowRequest();
-                    User user = userRepository.findById(userId).get();
+                    User user = userRepository.findById(userId).orElseThrow();
                     borrowRequest.setUser(user);
                     borrowRequest.setLibrary(library);
                     borrowRequest.setStatus(BorrowStatus.UNSENT);
@@ -74,8 +74,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
                 }
             }
         }else {
-            BorrowRequest borrowRequest = new BorrowRequest();
-            User user = userRepository.findById(userId).get();
+            User user = userRepository.findById(userId).orElseThrow();
             borrowRequest.setUser(user);
             borrowRequest.setLibrary(library);
             borrowRequest.setStatus(BorrowStatus.UNSENT);
@@ -102,7 +101,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
             BorrowBookInfor borrowBookInfor = new BorrowBookInfor();
             borrowBookInfor.setBookInfo(borrowRequestBookInfo);
             if(borrowRequestBookInfo.getParentCategoryId() != null && borrowRequestBookInfo.getParentCategoryId() > 0){
-                Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).get();
+                Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).orElseThrow();
                 borrowBookInfor.setParentCategoryName(category.getName());
             }
             borrowBookInforList.add(borrowBookInfor);
@@ -112,7 +111,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
 
     @Override
     public String deleteBookInRequest(Long borrowBookInstanceId) {
-        BorrowBookInstance borrowBookInstance = borrowBookInstanceRepository.findById(borrowBookInstanceId).get();
+        BorrowBookInstance borrowBookInstance = borrowBookInstanceRepository.findById(borrowBookInstanceId).orElseThrow();
         LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
         BorrowRequest borrowRequest = borrowBookInstance.getBorrowRequest();
         int newQuantity = libraryBook.getQuantity() + 1;
@@ -144,7 +143,7 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
             BorrowBookInfor borrowBookInfor = new BorrowBookInfor();
             borrowBookInfor.setBookInfo(borrowRequestBookInfo);
             if(borrowRequestBookInfo.getParentCategoryId() != null && borrowRequestBookInfo.getParentCategoryId() > 0){
-                Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).get();
+                Category category = categoryRepository.findById(borrowRequestBookInfo.getParentCategoryId()).orElseThrow();
                 borrowBookInfor.setParentCategoryName(category.getName());
             }
             borrowBookInforList.add(borrowBookInfor);

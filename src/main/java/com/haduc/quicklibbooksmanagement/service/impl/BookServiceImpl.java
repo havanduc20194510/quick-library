@@ -109,6 +109,32 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<ResultConvertDto> getAllConvert() {
+        List<Book> bookList = bookRepository.findAll();
+        List<ResultConvertDto> resultDtoList = new ArrayList<>();
+        for(Book book : bookList){
+            BookDto bookDto = bookMapper.toBookDto(book);
+            List<Author> authorList = book.getAuthorBooks().stream()
+                    .map(authorBook -> authorBook.getAuthor())
+                    .collect(Collectors.toList());
+            List<AuthorDto> authorDtos = authorList.stream()
+                    .map(author -> authorMapper.toAuthorDto(author))
+                    .collect(Collectors.toList());
+            List<Library> libraryList = book.getLibraryBooks().stream()
+                    .map(libraryBook -> libraryBook.getLibrary())
+                    .collect(Collectors.toList());
+            List<LibraryDto> libraryDtos = libraryList.stream()
+                    .map(library -> libraryMapper.toLibraryDto(library))
+                    .collect(Collectors.toList());
+
+            for (LibraryDto libraryDto : libraryDtos) {
+                ResultConvertDto resultConvertDto = new ResultConvertDto(bookDto, authorDtos, libraryDto);
+                resultDtoList.add(resultConvertDto);
+            }
+        }
+        return resultDtoList;
+    }
+    @Override
     public BookInstanceDto getById(Long id) {
         Book book = bookRepository.findById(id).orElse(null);
         BookDto bookDto = bookMapper.toBookDto(book);

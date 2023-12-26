@@ -35,6 +35,12 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
+    @GetMapping("/listConvert")
+    ResponseEntity<List<ResultConvertDto>> getAllConvert() {
+        List<ResultConvertDto> books = bookService.getAllConvert();
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
     @GetMapping("/get-by-id/{id}")
     ResponseEntity<BookInstanceDto> getById(@PathVariable("id") Long id) {
         BookInstanceDto book = bookService.getById(id);

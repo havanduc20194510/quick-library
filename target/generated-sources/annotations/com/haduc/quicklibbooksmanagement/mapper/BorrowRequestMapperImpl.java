@@ -1,17 +1,14 @@
 package com.haduc.quicklibbooksmanagement.mapper;
 
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestDto;
-import com.haduc.quicklibbooksmanagement.entity.BorrowBookInstance;
 import com.haduc.quicklibbooksmanagement.entity.BorrowRequest;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-12-24T15:06:43+0700",
+    date = "2023-12-26T19:05:56+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.1 (Oracle Corporation)"
 )
 @Component
@@ -40,10 +37,6 @@ public class BorrowRequestMapperImpl implements BorrowRequestMapper {
         borrowRequest.setCode( borrowRequestDto.getCode() );
         borrowRequest.setCreatedAt( borrowRequestDto.getCreatedAt() );
         borrowRequest.setUpdatedAt( borrowRequestDto.getUpdatedAt() );
-        List<BorrowBookInstance> list = borrowRequestDto.getBorrowBookInstances();
-        if ( list != null ) {
-            borrowRequest.setBorrowBookInstances( new ArrayList<BorrowBookInstance>( list ) );
-        }
 
         return borrowRequest;
     }
@@ -66,10 +59,6 @@ public class BorrowRequestMapperImpl implements BorrowRequestMapper {
         borrowRequestDto.setCode( borrowRequest.getCode() );
         borrowRequestDto.setCreatedAt( borrowRequest.getCreatedAt() );
         borrowRequestDto.setUpdatedAt( borrowRequest.getUpdatedAt() );
-        List<BorrowBookInstance> list = borrowRequest.getBorrowBookInstances();
-        if ( list != null ) {
-            borrowRequestDto.setBorrowBookInstances( new ArrayList<BorrowBookInstance>( list ) );
-        }
 
         return borrowRequestDto;
     }

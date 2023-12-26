@@ -63,8 +63,10 @@ public class BorrowRequestController {
 
     @PostMapping("/validate")
     public ResponseEntity<String> validateBorrowRequest(@RequestParam("code") String code) {
-        String message = borrowRequestService.acceptBorrowRequest(code);
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        int check = borrowRequestService.acceptBorrowRequest(code);
+        if(check == -1) return new ResponseEntity<>("Code is invalid", HttpStatus.NOT_FOUND);
+        else if(check == 0) return new ResponseEntity<>("Borrow request has been accepted", HttpStatus.BAD_REQUEST);
+        else return new ResponseEntity<>("Accept borrow request successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{borrow_request_id}")

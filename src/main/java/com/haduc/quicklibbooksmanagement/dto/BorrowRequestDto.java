@@ -25,6 +25,4 @@ public class BorrowRequestDto {
     private String code;
     private Date createdAt;
     private Date updatedAt;
-
-    private List<BorrowBookInstance> borrowBookInstances;
 }

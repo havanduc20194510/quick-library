@@ -11,7 +11,7 @@ public interface BorrowRequestService {
     List<BorrowRequestDto> getAllBorrowRequests();
     List<BorrowRequestInfo> getBorrowRequestsByUserId(Long userId);
     String sentBorrowRequest(Long borrowRequestId, Date borrowDate, Date requestDueDate);
-    String acceptBorrowRequest(String code);
+    int acceptBorrowRequest(String code);
     String deleteBorrowRequest(Long borrowRequestId);
 
 }
