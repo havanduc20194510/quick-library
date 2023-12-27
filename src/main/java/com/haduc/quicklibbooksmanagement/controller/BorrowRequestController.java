@@ -3,6 +3,7 @@ package com.haduc.quicklibbooksmanagement.controller;
 import com.cloudinary.utils.StringUtils;
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestDto;
 import com.haduc.quicklibbooksmanagement.dto.BorrowRequestInfo;
+import com.haduc.quicklibbooksmanagement.dto.BorrowRequestItem;
 import com.haduc.quicklibbooksmanagement.service.BorrowRequestService;
 import com.haduc.quicklibbooksmanagement.util.DateTimeUtils;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,8 @@ public class BorrowRequestController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<BorrowRequestDto>> getAllBorrowRequest(){
-        List<BorrowRequestDto> borrowRequestList = borrowRequestService.getAllBorrowRequests();
+    public ResponseEntity<List<BorrowRequestItem>> getAllBorrowRequest(){
+        List<BorrowRequestItem> borrowRequestList = borrowRequestService.getAllBorrowRequestItems();
         return new ResponseEntity<>(borrowRequestList, HttpStatus.OK);
     }
 
