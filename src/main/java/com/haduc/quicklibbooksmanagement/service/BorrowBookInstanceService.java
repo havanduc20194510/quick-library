@@ -10,7 +10,7 @@ public interface BorrowBookInstanceService {
 
     String create(Long userId, Long bookId, Long libraryId);
 
-    List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId);
+    List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long borrowRequestId);
 
     List<BorrowBookInfor> getBorrowBookInstancesByUserId(Long userId);
     String deleteBookInRequest(Long borrowBookInstanceId);

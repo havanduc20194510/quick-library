@@ -94,8 +94,8 @@ public class BorrowBookInstanceServiceImpl implements BorrowBookInstanceService 
     }
 
     @Override
-    public List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long userId, Long borrowRequestId) {
-        List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBooksByBorrowRequestId(userId, borrowRequestId);
+    public List<BorrowBookInfor> getBorrowBookInstancesByBorrowRequestId(Long borrowRequestId) {
+        List<BorrowRequestBookInfo> borrowRequestBookInfoList = borrowBookInstanceRepository.findBooksByBorrowRequestId(borrowRequestId);
         List<BorrowBookInfor> borrowBookInforList = new ArrayList<>();
         for (BorrowRequestBookInfo borrowRequestBookInfo : borrowRequestBookInfoList) {
             BorrowBookInfor borrowBookInfor = new BorrowBookInfor();
