@@ -8,6 +8,8 @@ import java.util.Date;
 public interface BorrowRequestItem {
     @Value("#{target.request_id}")
     Long getId();
+    @Value("#{target.code}")
+    String getCode();
 
     @Value("#{target.user_id}")
     Long getUserId();

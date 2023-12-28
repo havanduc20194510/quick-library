@@ -75,4 +75,11 @@ public class BorrowRequestController {
         String message = borrowRequestService.deleteBorrowRequest(borrowRequestId);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    @PostMapping("/return")
+    public ResponseEntity<String> returnBorrowRequest(@RequestParam("code") String code) {
+        boolean check = borrowRequestService.returnBorrowRequest(code);
+        if(check) return new ResponseEntity<>("Return borrow request successfully", HttpStatus.OK);
+        else return new ResponseEntity<>("Code is invalid", HttpStatus.NOT_FOUND);
+    }
 }

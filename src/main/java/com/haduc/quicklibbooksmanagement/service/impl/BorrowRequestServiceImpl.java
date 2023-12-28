@@ -72,6 +72,28 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     }
 
     @Override
+    public boolean returnBorrowRequest(String code) {
+        BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);
+        Date currentDate = new Date();
+        if(borrowRequest != null) {
+            if(borrowRequest.getStatus().equals(BorrowStatus.BORROWING)) {
+                borrowRequest.setStatus(BorrowStatus.RETURNED);
+                borrowRequest.setReturnDate(currentDate);
+                borrowRequestRepository.save(borrowRequest);
+                List<BorrowBookInstance> borrowBookInstances = borrowBookInstanceRepository.findByBorrowRequest_Id(borrowRequest.getId());
+                for(BorrowBookInstance borrowBookInstance : borrowBookInstances) {
+                    LibraryBook libraryBook = borrowBookInstance.getLibraryBook();
+                    int quantity = libraryBook.getQuantity() + 1;
+                    libraryBook.setQuantity(quantity);
+                    libraryBookRepository.save(libraryBook);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public List<BorrowRequestItem> getAllBorrowRequestItems() {
         return borrowRequestRepository.findAllBorrowRequestItems();
     }
