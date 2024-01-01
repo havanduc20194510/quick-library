@@ -36,6 +36,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    private Long libraryId;
+
     private Date createdAt;
     private Date updatedAt;
 

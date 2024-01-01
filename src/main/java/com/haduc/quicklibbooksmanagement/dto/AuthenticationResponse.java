@@ -11,6 +11,7 @@ public class AuthenticationResponse {
     private String username;
     private String email;
     private String role;
+    private Long libraryId;
     private String accessToken;
     private String refreshToken;
 }

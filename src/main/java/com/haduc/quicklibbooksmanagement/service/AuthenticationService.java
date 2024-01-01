@@ -38,6 +38,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
+                .libraryId(request.getLibraryId())
                 .createdAt(currentDate)
                 .updatedAt(currentDate)
                 .build();
@@ -73,6 +74,7 @@ public class AuthenticationService {
                 .username(user.getUserNameCore())
                 .email(user.getEmail())
                 .role(user.getRole().name())
+                .libraryId(user.getLibraryId())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
