@@ -27,8 +27,8 @@ public class BorrowRequestController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<BorrowRequestItem>> getAllBorrowRequest(){
-        List<BorrowRequestItem> borrowRequestList = borrowRequestService.getAllBorrowRequestItems();
+    public ResponseEntity<List<BorrowRequestItem>> getAllBorrowRequest(@RequestParam("libraryId") Long libraryId){
+        List<BorrowRequestItem> borrowRequestList = borrowRequestService.getAllBorrowRequestItems(libraryId);
         return new ResponseEntity<>(borrowRequestList, HttpStatus.OK);
     }
 

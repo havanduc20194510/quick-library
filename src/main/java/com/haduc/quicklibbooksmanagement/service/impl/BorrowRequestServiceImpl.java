@@ -94,8 +94,8 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     }
 
     @Override
-    public List<BorrowRequestItem> getAllBorrowRequestItems() {
-        return borrowRequestRepository.findAllBorrowRequestItems();
+    public List<BorrowRequestItem> getAllBorrowRequestItems(Long libraryId) {
+        return borrowRequestRepository.findAllBorrowRequestItems(libraryId);
     }
 
     @Override

@@ -14,7 +14,6 @@ public interface BorrowRequestService {
     int acceptBorrowRequest(String code);
     String deleteBorrowRequest(Long borrowRequestId);
     boolean returnBorrowRequest(String code);
-
-    List<BorrowRequestItem> getAllBorrowRequestItems();
+    List<BorrowRequestItem> getAllBorrowRequestItems(Long libraryId);
 
 }
