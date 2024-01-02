@@ -95,12 +95,38 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
 
     @Override
     public List<BorrowRequestItem> getAllBorrowRequestItems(Long libraryId) {
-        return borrowRequestRepository.findAllBorrowRequestItems(libraryId);
+        Date currentDate = new Date();
+        List<BorrowRequestItem> borrowRequestItems = borrowRequestRepository.findAllBorrowRequestItems(libraryId);
+        if(borrowRequestItems != null) {
+            for (BorrowRequestItem borrowRequestItem : borrowRequestItems) {
+                if (borrowRequestItem.getReturnDate() != null & currentDate.after(borrowRequestItem.getRequestDueDate()) && borrowRequestItem.getStatus().equals(BorrowStatus.BORROWING)) {
+                    BorrowRequest borrowRequest = borrowRequestRepository.findById(borrowRequestItem.getId()).orElse(null);
+                    borrowRequest.setStatus(BorrowStatus.OVERDUE);
+                    borrowRequestRepository.save(borrowRequest);
+                }
+            }
+        }
+        List<BorrowRequestItem> borrowRequestItems1 = borrowRequestRepository.findAllBorrowRequestItems(libraryId);
+        return borrowRequestItems1;
     }
 
     @Override
     public List<BorrowRequestInfo> getBorrowRequestsByUserId(Long userId) {
-        return borrowRequestRepository.findByUserIdAndCount(userId);
+        List<BorrowRequestInfo> borrowRequestInfos = borrowRequestRepository.findByUserIdAndCount(userId);
+        if(borrowRequestInfos != null) {
+            for (BorrowRequestInfo borrowRequestInfo : borrowRequestInfos) {
+                if (borrowRequestInfo.getStatus().equals(BorrowStatus.BORROWING)) {
+                    Date currentDate = new Date();
+                    if (borrowRequestInfo.getReturnDate() != null && currentDate.after(borrowRequestInfo.getRequestDueDate())) {
+                        BorrowRequest borrowRequest = borrowRequestRepository.findById(borrowRequestInfo.getId()).orElse(null);
+                        borrowRequest.setStatus(BorrowStatus.OVERDUE);
+                        borrowRequestRepository.save(borrowRequest);
+                    }
+                }
+            }
+        }
+        List<BorrowRequestInfo> borrowRequestInfos1 = borrowRequestRepository.findByUserIdAndCount(userId);
+        return borrowRequestInfos1;
     }
 
     @Override

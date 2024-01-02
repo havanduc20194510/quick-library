@@ -26,6 +26,9 @@ public interface BorrowRequestItem {
     @Value("#{target.request_due_date}")
     Date getRequestDueDate();
 
+    @Value("#{target.return_date}")
+    Date getReturnDate();
+
     @Value("#{target.book_number}")
     int getBookNumber();
 }
