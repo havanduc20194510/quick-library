@@ -51,6 +51,7 @@ public class AuthenticationService {
                 .username(savedUser.getUserNameCore())
                 .email(savedUser.getEmail())
                 .role(savedUser.getRole().name())
+                .libraryId(savedUser.getLibraryId())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
