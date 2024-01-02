@@ -36,8 +36,8 @@ public class BookController {
     }
 
     @GetMapping("/listConvert")
-    ResponseEntity<List<ResultConvertDto>> getAllConvert() {
-        List<ResultConvertDto> books = bookService.getAllConvert();
+    ResponseEntity<List<ResultConvertDto>> getAllConvert(@RequestParam("library_id") Long libraryId) {
+        List<ResultConvertDto> books = bookService.getAllConvert(libraryId);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 

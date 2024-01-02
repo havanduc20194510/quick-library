@@ -1,6 +1,7 @@
 package com.haduc.quicklibbooksmanagement.repository;
 
 import com.haduc.quicklibbooksmanagement.dto.BookInfoDto;
+import com.haduc.quicklibbooksmanagement.dto.BookInfoResultDto;
 import com.haduc.quicklibbooksmanagement.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +41,6 @@ public interface BookRepository extends JpaRepository<Book, Long>, PagingAndSort
             "ON lb.library_id = l.id " +
             "ORDER BY title ASC",
             nativeQuery = true)
-    Page<BookInfoDto> getBooksAndLibraries(Pageable pageable);
     Page<Book> findByTitleContainsIgnoreCaseAndCategoryId(String title, Long categoryId, Pageable pageable);
 
     @Query(value = "SELECT * FROM books WHERE publish_year = :publishYear AND category_id = :categoryId", nativeQuery = true)
