@@ -13,7 +13,7 @@ public interface BookService {
     BookDto insertBook(BookDto bookDto, MultipartFile image) throws IOException;
     Page<ResultDto> getAll(int page, int size);
 
-    List<ResultConvertDto> getAllConvert();
+    List<ResultConvertDto> getAllConvert(Long libraryId);
     BookInstanceDto getById(Long id);
     Page<ResultDto> search(String title, String authorName, Integer publishYear, String libraryName, Long categoryId, int page, int size);
 

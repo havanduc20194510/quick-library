@@ -109,7 +109,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<ResultConvertDto> getAllConvert() {
+    public List<ResultConvertDto> getAllConvert(Long libraryId) {
         List<Book> bookList = bookRepository.findAll();
         List<ResultConvertDto> resultDtoList = new ArrayList<>();
         for(Book book : bookList){
@@ -128,8 +128,10 @@ public class BookServiceImpl implements BookService {
                     .collect(Collectors.toList());
 
             for (LibraryDto libraryDto : libraryDtos) {
-                ResultConvertDto resultConvertDto = new ResultConvertDto(bookDto, authorDtos, libraryDto);
-                resultDtoList.add(resultConvertDto);
+                if(libraryDto.getId().equals(libraryId)){
+                    ResultConvertDto resultConvertDto = new ResultConvertDto(bookDto, authorDtos, libraryDto);
+                    resultDtoList.add(resultConvertDto);
+                }
             }
         }
         return resultDtoList;

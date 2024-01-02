@@ -63,8 +63,8 @@ public class BorrowRequestController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> validateBorrowRequest(@RequestParam("code") String code) {
-        int check = borrowRequestService.acceptBorrowRequest(code);
+    public ResponseEntity<String> validateBorrowRequest(@RequestParam("code") String code, @RequestParam("library_id") Long libraryId) {
+        int check = borrowRequestService.acceptBorrowRequest(code, libraryId);
         if(check == -1) return new ResponseEntity<>("Code is invalid", HttpStatus.NOT_FOUND);
         else if(check == 0) return new ResponseEntity<>("Borrow request has been accepted", HttpStatus.BAD_REQUEST);
         else return new ResponseEntity<>("Accept borrow request successfully", HttpStatus.OK);

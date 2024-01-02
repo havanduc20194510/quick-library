@@ -143,9 +143,10 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
         return "Delete borrow request failed!. Borrow request has been accepted";
     }
     @Override
-    public int acceptBorrowRequest(String code) {
+    public int acceptBorrowRequest(String code, Long libraryId) {
         BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);
         if(borrowRequest == null) return -1;
+        else if (!borrowRequest.getLibrary().equals(libraryId)) return -1;
         else{
             if(borrowRequest.getStatus().equals(BorrowStatus.REQUESTED)) {
                 borrowRequest.setStatus(BorrowStatus.BORROWING);
