@@ -72,7 +72,7 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     }
 
     @Override
-    public boolean returnBorrowRequest(String code) {
+    public boolean returnBorrowRequest(String code, Long libraryId) {
         BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);
         Date currentDate = new Date();
         if(borrowRequest != null) {

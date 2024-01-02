@@ -13,7 +13,7 @@ public interface BorrowRequestService {
     String sentBorrowRequest(Long borrowRequestId, Date borrowDate, Date requestDueDate);
     int acceptBorrowRequest(String code, Long libraryId);
     String deleteBorrowRequest(Long borrowRequestId);
-    boolean returnBorrowRequest(String code);
+    boolean returnBorrowRequest(String code, Long libraryId);
     List<BorrowRequestItem> getAllBorrowRequestItems(Long libraryId);
 
 }

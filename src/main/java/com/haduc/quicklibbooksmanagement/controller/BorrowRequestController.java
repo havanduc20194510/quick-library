@@ -77,8 +77,8 @@ public class BorrowRequestController {
     }
 
     @PostMapping("/return")
-    public ResponseEntity<String> returnBorrowRequest(@RequestParam("code") String code) {
-        boolean check = borrowRequestService.returnBorrowRequest(code);
+    public ResponseEntity<String> returnBorrowRequest(@RequestParam("code") String code, @RequestParam("library_id") Long libraryId) {
+        boolean check = borrowRequestService.returnBorrowRequest(code, libraryId);
         if(check) return new ResponseEntity<>("Return borrow request successfully", HttpStatus.OK);
         else return new ResponseEntity<>("Code is invalid", HttpStatus.NOT_FOUND);
     }
