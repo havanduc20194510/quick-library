@@ -145,7 +145,8 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
     @Override
     public int acceptBorrowRequest(String code, Long libraryId) {
         BorrowRequest borrowRequest = borrowRequestRepository.findByCode(code);
-        if(borrowRequest == null && !borrowRequest.getLibrary().equals(libraryId)) return -1;
+        if(borrowRequest == null) return -1;
+        else if (!borrowRequest.getLibrary().equals(libraryId)) return -1;
         else{
             if(borrowRequest.getStatus().equals(BorrowStatus.REQUESTED)) {
                 borrowRequest.setStatus(BorrowStatus.BORROWING);
