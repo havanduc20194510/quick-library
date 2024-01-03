@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("/api/v1/book/**").permitAll()
                                 .requestMatchers("/api/v1/author/**").permitAll()
-                                .requestMatchers("/api/v1/api/v1/author-book/**").permitAll()
+                                .requestMatchers("/api/v1/author-book/**").permitAll()
                                 .requestMatchers("/api/v1/borrow-book-instance/**").hasAnyAuthority(UserRole.USER.name(), UserRole.LIBRARIAN.name())
                                 .requestMatchers("/api/v1/borrow-request/**").hasAnyAuthority(UserRole.USER.name(), UserRole.LIBRARIAN.name())
                                 .requestMatchers("/api/v1/library/**").permitAll()
