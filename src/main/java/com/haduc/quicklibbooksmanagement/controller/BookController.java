@@ -30,7 +30,7 @@ public class BookController {
 
     @GetMapping("/list")
     ResponseEntity<Page<ResultDto>> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
-                                           @RequestParam(value = "size", defaultValue = "5") int size) {
+                                           @RequestParam(value = "size", defaultValue = "500") int size) {
         Page<ResultDto> books = bookService.getAll(page, size);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
